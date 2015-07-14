@@ -21,4 +21,14 @@ book.epub:
 		--authors "Mikito Takada" \
 		--language en || true
 
+upload:
+	aws s3 sync ./output/ s3://book.mixu.net/node/ \
+	--region us-west-1 \
+	--delete \
+	--exclude "node_modules/*" \
+	--exclude ".git" \
+	--exclude ".DS_Store"
+
+.PHONY: upload
+
 .PHONY: build generate ebook book.mobi book.epub
