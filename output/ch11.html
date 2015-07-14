@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>11. File system - Mixu&#x27;s Node book</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css">
+@font-face {
+  font-family: 'Droid Sans';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Droid Sans'), local('DroidSans'), url('DroidSans.woff') format('woff');
+}
+</style>
+<link href='http://fonts.googleapis.com/css?family=Andika|Cantarell:400,700,400italic' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Droid+Sans+Mono' rel='stylesheet' type='text/css'>
+<script src="assets/jquery-1.6.1.min.js"></script>
+<link type="text/css" rel="stylesheet" href="assets/style.css"/>
+<style type="text/css">
+#bottom_navi {
+  font-size: larger;
+  margin: 8px;
+}
+</style>
+<link type="text/css" rel="stylesheet" href="assets/assert.css"/>
+<link type="text/css" rel="stylesheet" href="assets/prettify.css"/>
+<script type="text/javascript" src="assets/prettify.js"></script>
+<!-- Script runner -->
+<script type="text/javascript" src="assets/runner.js"></script>
+  </head>
+<body>
+  <div id="wrapper">
+    <div id="header">
+      <div id="brand">
+        <h1>Mixu's Node book</h1>
+        <span>A book about using Node.js</span>
+      </div>
+      <div id="navi">
+        <form class="search" action="http://www.google.com/search">
+          <input type="hidden" name="as_sitesearch" value="book.mixu.net">
+          <input type="text" name="as_q" value="" class="search_field">
+          <input type="submit" value="Search" class="search_btn">
+        </form>
+      </div>
+    </div>
+
+    <div class="clear">
+      <hr>
+    </div>
+     <!-- Main -->
+
+    <div id="main">
+      <div id="container">
+        <div id="content" class="post">
+<h1 id="-chapter_number-file-system">11. File system</h1>
+<div class="summary">
+
+This chapter covers the file system module.
+
+</div>
+
+<p>The file system functions consist of file I/O and directory I/O functions. All of the file system functions offer both synchronous (blocking) and asynchronous (non-blocking) versions. The difference between these two is that the synchronous functions (which have “Sync” in their name) return the value directly and prevent Node from executing any code while the I/O operation is being performed:</p>
+<pre class="prettyprint">
+var fs = require('fs');
+var data = fs.readFileSync('./index.html', 'utf8');
+// wait for the result, then use it
+console.log(data);
+</pre>
+
+<p>Asynchronous functions return the value as a parameter to a callback given to them:</p>
+<pre class="prettyprint">
+var fs = require('fs');
+fs.readFile('./index.html', 'utf8', function(err, data) {
+  // the data is passed to the callback in the second argument
+  console.log(data);
+});
+</pre>
+
+<p>The table below lists all the asynchronous functions in the FS API. These functions have synchronous versions as well, but I left them out to make the listing more readable.</p>
+<table>
+  <tr>
+  <td>
+    <strong>Read &amp; write a file (fully buffered)</strong>
+
+<em>   <a href="http://nodejs.org/api/fs.html#fs.readFile">fs.readFile(filename, [encoding], [callback])</a>
+</em>   <a href="http://nodejs.org/api/fs.html#fs.writeFile">fs.writeFile(filename, data, encoding=&#39;utf8&#39;,
+        [callback])</a>
+  </td>
+  <td>
+    <strong>Read &amp; write a file (in parts)</strong>
+
+<em>   <a href="http://nodejs.org/api/fs.html#fs.open">fs.open(path, flags, [mode], [callback])</a>
+</em>   <a href="http://nodejs.org/api/fs.html#fs.read">fs.read(fd, buffer, offset, length, position, [callback])</a>
+<em>   <a href="http://nodejs.org/api/fs.html#fs.write">fs.write(fd, buffer, offset, length, position, [callback])</a>
+</em>   <a href="http://nodejs.org/api/fs.html#fs.fsync">fs.fsync(fd, callback)</a>
+<em>   <a href="http://nodejs.org/api/fs.html#fs.truncate">fs.truncate(fd, len, [callback])</a>
+</em>   <a href="http://nodejs.org/api/fs.html#fs.close">fs.close(fd, [callback])</a>
+  </td>
+  <td>
+    <strong>Directories: read, create &amp; delete</strong>
+
+<em>   <a href="http://nodejs.org/api/fs.html#fs.readdir">fs.readdir(path, [callback])</a>
+</em>   <a href="http://nodejs.org/api/fs.html#fs.mkdir">fs.mkdir(path, mode, [callback])</a>
+<em>   <a href="http://nodejs.org/api/fs.html#fs.rmdir">fs.rmdir(path, [callback])</a>
+  </td>
+  </tr>
+
+  <tr>
+  <td>
+    <strong>Files: info</strong>
+
+</em>   <a href="http://nodejs.org/api/fs.html#fs.stat">fs.stat(path, [callback])</a>
+<em>   <a href="http://nodejs.org/api/fs.html#fs.lstat">fs.lstat(path, [callback])</a>
+</em>   <a href="http://nodejs.org/api/fs.html#fs.fstat">fs.fstat(fd, [callback])</a>
+<em>   <a href="http://nodejs.org/api/fs.html#fs.realpath">fs.realpath(path, [callback])</a>
+  </td>
+  <td>
+    <strong>Readable streams</strong>
+
+</em>   <a href="http://nodejs.org/api/fs.html#fs.ReadStream">fs.ReadStream</a>
+<em>   <a href="http://nodejs.org/api/fs.html#event_open_">Event: &#39;open&#39;</a>
+</em>   <a href="http://nodejs.org/api/fs.html#fs.createReadStream">fs.createReadStream(path, [options])</a>
+  </td>
+  <td>
+    <strong>Writable streams</strong>
+
+<em>   <a href="http://nodejs.org/api/fs.html#fs.WriteStream">fs.WriteStream</a>
+</em>   <a href="http://nodejs.org/api/fs.html#event_open_">Event: &#39;open&#39;</a>
+<em>   <a href="http://nodejs.org/api/fs.html#file.bytesWritten">file.bytesWritten</a>
+</em>   <a href="http://nodejs.org/api/fs.html#fs.createWriteStream">fs.createWriteStream(path, [options])</a>
+  </td>
+  </tr>
+
+  <tr>
+  <td>
+    <strong>Files: rename, watch changes &amp; change timestamps</strong>
+
+<em>   <a href="http://nodejs.org/api/fs.html#fs.rename">fs.rename(path1, path2, [callback])</a>
+</em>   <a href="http://nodejs.org/api/fs.html#fs.watchFile">fs.watchFile(filename, [options], listener)</a>
+<em>   <a href="http://nodejs.org/api/fs.html#fs.unwatchFile">fs.unwatchFile(filename)</a>
+</em>   <a href="http://nodejs.org/api/fs.html#fs.watch">fs.watch(filename, [options], listener)</a>
+<em>   <a href="http://nodejs.org/api/fs.html#fs.utimes">fs.utimes(path, atime, mtime, callback)</a>
+</em>   <a href="http://nodejs.org/api/fs.html#fs.futimes">fs.futimes(path, atime, mtime, callback)</a>
+  </td>
+  <td>
+    <strong>Files: Owner and permissions</strong>
+
+<em>   <a href="http://nodejs.org/api/fs.html#fs.chown">fs.chown(path, uid, gid, [callback])</a>
+</em>   <a href="http://nodejs.org/api/fs.html#fs.fchown">fs.fchown(path, uid, gid, [callback])</a>
+<em>   <a href="http://nodejs.org/api/fs.html#fs.lchown">fs.lchown(path, uid, gid, [callback])</a>
+</em>   <a href="http://nodejs.org/api/fs.html#fs.chmod">fs.chmod(path, mode, [callback])</a>
+<em>   <a href="http://nodejs.org/api/fs.html#fs.fchmod">fs.fchmod(fd, mode, [callback])</a>
+</em>   <a href="http://nodejs.org/api/fs.html#fs.lchmod">fs.lchmod(fd, mode, [callback])</a>
+  </td>
+  <td>
+    <strong>Files: symlinks</strong>
+
+<em>   <a href="http://nodejs.org/api/fs.html#fs.link">fs.link(srcpath, dstpath, [callback])</a>
+</em>   <a href="http://nodejs.org/api/fs.html#fs.symlink">fs.symlink(linkdata, path, [callback])</a>
+<em>   <a href="http://nodejs.org/api/fs.html#fs.readlink">fs.readlink(path, [callback])</a>
+</em>   <a href="http://nodejs.org/api/fs.html#fs.unlink">fs.unlink(path, [callback])</a>
+  </td>
+
+  </tr>
+</table>
+
+<p>You should use the asynchronous version in most cases, but in rare cases (e.g. reading configuration files when starting a server) the synchronous version is more appropriate. Note that the asynchronous versions require a bit more thought, since the operations are started immediately and may finish in any order:</p>
+<pre class="prettyprint">
+fs.readFile('./file.html', function (err, data) {
+  // ...
+});
+fs.readFile('./other.html', function (err, data) {
+  // ..
+});
+</pre>
+
+<p>These file reads might complete in any order depending on how long it takes to read each file. The simplest solution is to chain the callbacks:</p>
+<pre class="prettyprint">
+fs.readFile('./file.html', function (err, data) {
+   // ...
+   fs.readFile('./other.html', function (err, data) {
+      // ...
+   });
+});
+</pre>
+
+<p>However, we can do better by using the control flow patterns discussed in the chapter on control flow.</p>
+<h2 id="-chapter_number-1-files-reading-and-writing">11.1  Files: reading and writing</h2>
+<p>Fully buffered reads and writes are fairly straightforward: call the function and pass in a String or a Buffer to write, and then check the return value.</p>
+<h3 id="recipe-reading-a-file-fully-buffered-">Recipe: Reading a file (fully buffered)</h3>
+<pre class="prettyprint">
+fs.readFile('./index.html', 'utf8', function(err, data) {
+  // the data is passed to the callback in the second argument
+  console.log(data);
+});
+</pre>
+
+<h3 id="recipe-writing-a-file-fully-buffered-">Recipe: Writing a file (fully buffered)</h3>
+<pre class="prettyprint">
+fs.writeFile('./results.txt', 'Hello World', function(err) {
+  if(err) throw err;
+  console.log('File write completed');
+});
+</pre>
+
+<p>When we want to work with files in smaller parts, we need to open(), get a file descriptor and then work with that file descriptor.</p>
+<p><code>fs.open(path, flags, [mode], [callback])</code> supports the following flags:</p>
+<ul class="list">
+<li>&#39;r&#39; - Open file for reading. An exception occurs if the file does not exist.</li>
+<li>&#39;r+&#39; - Open file for reading and writing. An exception occurs if the file does not exist.</li>
+<li>&#39;w&#39; - Open file for writing. The file is created (if it does not exist) or truncated (if it exists).</li>
+<li>&#39;w+&#39; - Open file for reading and writing. The file is created (if it does not exist) or truncated (if it exists).</li>
+<li>&#39;a&#39; - Open file for appending. The file is created if it does not exist.</li>
+<li>&#39;a+&#39; - Open file for reading and appending. The file is created if it does not exist.</li>
+</ul>
+<p>mode refers to the permissions to use in case a new file is created. The default is 0666.</p>
+<h3 id="recipe-opening-writing-to-a-file-and-closing-it-in-parts-">Recipe: Opening, writing to a file and closing it (in parts)</h3>
+<pre class="prettyprint">
+fs.open('./data/index.html', 'w', function(err, fd) {
+  if(err) throw err;
+  var buf = new Buffer('bbbbb\n');
+  fs.write(fd, buf, 0, buf.length, null, function(err, written, buffer) {
+    if(err) throw err;
+    console.log(err, written, buffer);
+    fs.close(fd, function() {
+      console.log('Done');
+    });
+  });
+});
+</pre>
+
+<p>The read() and write() functions operate on Buffers, so in the example above we create a new Buffer() from a string. Note that built-in readable streams (e.g. HTTP, Net) generally return Buffers.</p>
+<h3 id="recipe-opening-seeking-to-a-position-reading-from-a-file-and-closing-it-in-parts-">Recipe: Opening, seeking to a position, reading from a file and closing it (in parts)</h3>
+<pre class="prettyprint">
+  fs.open('./data/index.html', 'r', function(err, fd) {
+    if(err) throw err;
+    var str = new Buffer(3);
+    fs.read(fd, buf, 0, buf.length, null, function(err, bytesRead, buffer) {
+      if(err) throw err;
+      console.log(err, bytesRead, buffer);
+      fs.close(fd, function() {
+        console.log('Done');
+      });
+    });
+  });
+</pre>
+
+<h2 id="-chapter_number-2-directories-read-create-amp-delete">11.2 Directories: read, create &amp; delete</h2>
+<h3 id="recipe-reading-a-directory">Recipe: Reading a directory</h3>
+<p>Reading a directory returns the names of the items (files, directories and others) in it.</p>
+<pre class="prettyprint">
+var path = './data/';
+fs.readdir(path, function (err, files) {
+  if(err) throw err;
+  files.forEach(function(file) {
+    console.log(path+file);
+    fs.stat(path+file, function(err, stats) {
+      console.log(stats);
+    });
+  });
+});
+</pre>
+
+<p>fs.stat() gives us more information about each item. The object returned from fs.stat looks like this:</p>
+<pre class="prettyprint">
+{ dev: 2114,
+  ino: 48064969,
+  mode: 33188,
+  nlink: 1,
+  uid: 85,
+  gid: 100,
+  rdev: 0,
+  size: 527,
+  blksize: 4096,
+  blocks: 8,
+  atime: Mon, 10 Oct 2011 23:24:11 GMT,
+  mtime: Mon, 10 Oct 2011 23:24:11 GMT,
+  ctime: Mon, 10 Oct 2011 23:24:11 GMT }
+</pre>
+
+<p>atime, mtime and ctime are Date instances. The stat object also has the following functions:</p>
+<ul class="list">
+<li>stats.isFile()</li>
+<li>stats.isDirectory()</li>
+<li>stats.isBlockDevice()</li>
+<li>stats.isCharacterDevice()</li>
+<li>stats.isSymbolicLink() (only valid with fs.lstat())</li>
+<li>stats.isFIFO()</li>
+<li>stats.isSocket()</li>
+</ul>
+<p>The Path module has a set of additional functions for working with paths, such as:</p>
+<table>
+<tr><td>path.normalize(p)</td><td>Normalize a string path, taking care of &#39;..&#39; and &#39;.&#39; parts.</td></tr>
+<tr><td>path.join([path1], [path2], [...])</td><td>Join all arguments together and normalize the resulting path.</td></tr>
+<tr><td>path.resolve([from ...], to)</td><td>Resolves to to an absolute path.
+
+If to isn&#39;t already absolute from arguments are prepended in right to left order, until an absolute path is found. If after using all from paths still no absolute path is found, the current working directory is used as well. The resulting path is normalized, and trailing slashes are removed unless the path gets resolved to the root directory.
+</td></tr>
+<tr><td>fs.realpath(path, [callback])
+
+fs.realpathSync(path)
+</td>
+<td>Resolves both absolute (‘/path/file’) and relative paths (‘../../file’) and returns the absolute path to the file.</td></tr>
+<tr><td>path.dirname(p)</td><td>Return the directory name of a path. Similar to the Unix dirname command.</td></tr>
+<tr><td>path.basename(p, [ext])</td><td>Return the last portion of a path. Similar to the Unix basename command.</td></tr>
+<tr><td>path.extname(p)</td><td>Return the extension of the path. Everything after the last &#39;.&#39; in the last portion of the path. If there is no &#39;.&#39; in the last portion of the path or the only &#39;.&#39; is the first character, then it returns an empty string.</td></tr>
+<tr><td>path.exists(p, [callback])
+
+path.existsSync(p)
+</td><td>Test whether or not the given path exists. Then, call the callback argument with either true or false.</td></tr>
+</table>
+
+<h3 id="recipe-creating-and-deleting-a-directory">Recipe: Creating and deleting a directory</h3>
+<pre class="prettyprint">
+fs.mkdir('./newdir', 0666, function(err) {
+  if(err) throw err;
+  console.log('Created newdir');
+  fs.rmdir('./newdir', function(err) {
+    if(err) throw err;
+    console.log('Removed newdir');
+  });
+});
+</pre>
+
+<h2 id="using-readable-and-writable-streams">Using Readable and Writable streams</h2>
+<p>Readable and Writable streams are covered in <a href="ch9.html">Chapter 9</a>.</p>
+<h3 id="recipe-reading-a-file-and-writing-to-another-file">Recipe: Reading a file and writing to another file</h3>
+<pre class="prettyprint">
+var file = fs.createReadStream('./data/results.txt', {flags: 'r'} );
+var out = fs.createWriteStream('./data/results2.txt', {flags: 'w'});
+file.on('data', function(data) {
+  console.log('data', data);
+  out.write(data);
+});
+file.on('end', function() {
+  console.log('end');
+  out.end(function() {
+    console.log('Finished writing to file');
+    test.done();
+  });
+});
+</pre>
+
+<p>You can also use pipe():</p>
+<pre class="prettyprint">
+var file = fs.createReadStream('./data/results.txt', {flags: 'r'} );
+var out = fs.createWriteStream('./data/results2.txt', {flags: 'w'});
+file.pipe(out);
+</pre>
+
+<h3 id="recipe-appending-to-a-file">Recipe: Appending to a file</h3>
+<pre class="prettyprint">
+var file = fs.createWriteStream('./data/results.txt', {flags: 'a'} );
+file.write('HELLO!\n');
+file.end(function() {
+  test.done();
+});
+</pre>
+
+<h2 id="practical-example">Practical example</h2>
+<p>Since Node makes it very easy to launch multiple asynchronous file accesses, you have to be careful when performing large amounts of I/O operations: you might exhaust the available number of file handles (a limited operating system resource used to access files). Furthermore, since the results are returned in a asynchronous manner which does not guarantee completion order, you will most likely want to coordinate the order of execution using the control flow patterns discussed in the previous chapter. Let’s look at an example.</p>
+<h4 id="example-searching-for-a-file-in-a-directory-traversing-recursively">Example: searching for a file in a directory, traversing recursively</h4>
+<p>In this example, we will search for a file recursively starting from a given path. The function takes three arguments: a path to search, the name of the file we are looking for, and a callback which is called when the file is found.</p>
+<p>Here is the naive version: a bunch of nested callbacks, no thought needed:</p>
+<pre class="prettyprint">
+var fs = require('fs');
+
+function findFile(path, searchFile, callback) {
+  fs.readdir(path, function (err, files) {
+    if(err) { return callback(err); }
+    files.forEach(function(file) {
+      fs.stat(path+'/'+file, function() {
+        if(err) { return callback(err); }
+        if(stats.isFile() &amp;&amp; file == searchFile) {
+          callback(undefined, path+'/'+file);
+          }
+        } else if(stats.isDirectory()) {
+          findFile(path+'/'+file, searchFile, callback);
+        }
+      });
+    });
+  });
+}
+
+findFile('./test', 'needle.txt', function(err, path) {
+  if(err) { throw err; }
+  console.log('Found file at: '+path);
+});
+</pre>
+
+<p>Splitting the function into smaller functions makes it somewhat easier to understand:</p>
+<pre class="prettyprint">
+var fs = require('fs');
+
+function findFile(path, searchFile, callback) {
+  // check for a match, given a stat
+  function isMatch(err, stats) {
+    if(err) { return callback(err); }
+    if(stats.isFile() &amp;&amp; file == searchFile) {
+      callback(undefined, path+'/'+file);
+    } else if(stats.isDirectory()) {
+      statDirectory(path+'/'+file);
+    }
+  }
+  // launch the search
+  statDirectory(path, isMatch);
+}
+
+// Read and stat a directory
+function statDirectory(path, callback) {
+  fs.readdir(path, function (err, files) {
+    if(err) { return callback(err); }
+    files.forEach(function(file) {
+      fs.stat(path+'/'+file, callback);
+    });
+  });
+}
+
+findFile('./test', 'needle.txt', function(err, path) {
+  if(err) { throw err; }
+  console.log('Found file at: '+path);
+});
+</pre>
+
+<p>The function is split into smaller parts:</p>
+<ul class="list">
+<li>findFile: This code starts the whole process, taking the main input arguments as well as the callback to call with the results.</li>
+<li>isMatch: This hidden helper function takes the results from stat() and applies the &quot;is a match&quot; logic necessary to implement findFile().</li>
+<li>statDirectory: This function simply reads a path, and calls the callback for each file.</li>
+</ul>
+<p>I admit this is fairly verbose.</p>
+<h4 id="pathiterator-improving-reuse-by-using-an-eventemitter">PathIterator: Improving reuse by using an EventEmitter</h4>
+<p>However, we can accomplish the same goal in a more reusable manner by creating our own module (pathiterator.js), which treats directory traversal as a stream of events by using EventEmitter:</p>
+<pre class="prettyprint">
+var fs = require('fs'),
+    EventEmitter = require('events').EventEmitter,
+    util = require('util');
+
+var PathIterator = function() { };
+
+// augment with EventEmitter
+util.inherits(PathIterator, EventEmitter);
+
+// Iterate a path, emitting 'file' and 'directory' events.
+PathIterator.prototype.iterate = function(path) {
+  var self = this;
+  this.statDirectory(function(fpath, stats) {
+    if(stats.isFile()) {
+      self.emit('file', fpath, stats);
+    } else if(stats.isDirectory()) {
+      self.emit('directory', fpath, stats);
+      self.iterate(path+'/'+file);
+    }
+  });
+};
+
+// Read and stat a directory
+PathIterator.prototype.statDirectory = function(path, callback) {
+  fs.readdir(path, function (err, files) {
+    if(err) { self.emit('error', err); }
+    files.forEach(function(file) {
+      var fpath = path+'/'+file;
+      fs.stat(fpath, function (err, stats) {
+        if(err) { self.emit('error', err); }
+        callback(fpath, stats);
+      });
+    });
+  });
+};
+
+module.exports = PathIterator;</pre>
+
+<p>As you can see, we create a new class which extends EventEmitter, and emits the following events:</p>
+<ul class="list">
+<li>“error” - function(error): emitted on errors.</li>
+<li>“file” - function(filepath, stats): the full path to the file and the result from fs.stat</li>
+<li>“directory” - function(dirpath, stats): the full path to the directory and the result from fs.stat</li>
+</ul>
+<p>We can then use this utility class to implement the same directory traversal:</p>
+<pre class="prettyprint">
+var PathIterator = require('./pathiterator.js');
+function findFile(path, searchFile, callback) {
+  var pi = new PathIterator();
+  pi.on('file', function(file, stats) {
+    if(file == searchFile) {
+      callback(undefined, file);
+    }
+  });
+  pi.on('error', callback);
+  pi.iterate(path);
+}
+</pre>
+
+<p>While this approach takes a few lines more than the pure-callback approach, the result is a somewhat nicer and extensible (for example - you could look for multiple files in the “file” callback easily).</p>
+<p>If you end up writing a lot of code that iterates paths, having a PathIterator EventEmitter will simplify your code. The callbacks are still there - after all, this is non-blocking I/O via the event loop - but the interface becomes a lot easier to understand. You are probably running findFile() as part of some larger process - and instead of having all that file travelsal logic in the same module, you have a fixed interface which you can write your path traversing operations against.</p>
+<h4 id="using-a-specialized-module-async-js">Using a specialized module: async.js</h4>
+<p>Encapsulating the I/O behind a EventEmitter helps a bit, but we can do one better by using fjacob&#39;s <a href="https://github.com/fjakobs/async.js/tree/">async.js</a>. This is a FS-specific library that encapsulates file system operations behind a chainable interface. The findFile() function can be written using async.js like this:</p>
+<pre class="prettyprint">
+var async = require('asyncjs');
+function findFile(path, searchFile, callback) {
+  async.readdir(path)
+    .stat()
+    .filter(function(file) {
+      return file.stat == searchFile;
+    })
+    .toString(callback);
+}
+</pre>
+
+<p>The techniques behind async.js consist essentially of an object that acts like a series (from the chapter on Control Flow), but allows you to specify the operations using a chainable interface.</p>
+<p>My point - if there is any - is that coordinating asynchronous I/O control flow in Node is somewhat more complicated than in scripting environments/languages where you can rely on I/O blocking the execution of code. This is most obvious when you are dealing with the file system, because file system I/O generally requires you to perform long sequences of asynchronous calls in order to get what you want.</p>
+<p>However, even with file I/O, it is possible to come up with solutions that abstract away the details from your main code. In some cases you can find domain specific libraries that provide very conscise ways of expressing your logic (e.g. async.js) - and in other cases you can at least take parts of the process, and move those into a separate module (e.g. PathIterator).</p>
+
+<div id="bottom_navi">
+  <a href="ch10.html"> &lt; &lt; Previous Chapter</a> | <a href="ch13.html">Next Chapter &gt; &gt;</a>
+</div>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'mixu'; // required: replace example with your forum shortname
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+          </div>
+        </div>
+      </div>
+      <div id="sidebar">
+        <h3><a href="index.html">Home</a></h3>
+        <h3><a href="ch10.html">Previous Chapter</a></h3>
+        <h3><a href="ch13.html">Next Chapter</a></h3>
+        <br>
+        <p>
+          <a href="http://book.mixu.net/mixu-node-book.mobi" style="color: gray;"> .mobi (Kindle)</a>
+        </p>
+        <p>
+          <a href="http://book.mixu.net/mixu-node-book.epub" style="color: gray;">epub</a>
+        </p>
+        <p>
+          <a href="http://book.mixu.net/single.html" style="color: gray;">Single page HTML</a>
+        </p>
+        <p>
+          <a href="http://www.printfriendly.com/print/v2?url=http://book.mixu.net/single.html" style="color: gray;">PDF</a>
+        </p>
+        <br>
+        <h3>Other books</h3>
+        <ul class="spaced">
+          <li>
+            <a href="http://book.mixu.net/css/">Learn CSS Layout the pedantic way</a> (2015)
+          </li>
+          <li>
+            <a href="http://book.mixu.net/distsys/">Distributed systems: for fun and profit</a> (2013)
+          </li>
+          <li>
+            <a href="http://singlepageappbook.com/">Single page apps in depth</a> (2013)
+          </li>
+        </ul>
+      </div>
+    <div class="clear">
+    </div>
+
+    <div id="footer">
+      <p>A book about <a href="http://nodejs.org/">Node</a> by <a href="http://mixu.net/">Mikito Takada</a>.</p>
+    </div>
+    </div>
+  </div>
+
+
+  </div>
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-26716650-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+
+  </script>
+</body>
+</html>

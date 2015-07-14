@@ -1,0 +1,17 @@
+{
+  "name": "book",
+  "description": "Book about node",
+  "version": "1.0.0",
+  "author": {
+    "name": "Mikito Takada",
+    "email": "mixu@mixu.net",
+    "url": "http://blog.mixu.net/"
+    },
+  "main": "generate.js",
+  "dependencies": {
+    "marked": "~0.2.5",
+    "handlebars": "latest"
+  },
+  "private": "true"
+}
+

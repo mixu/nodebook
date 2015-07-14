@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>10. Node: HTTP, HTTPS - Mixu&#x27;s Node book</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css">
+@font-face {
+  font-family: 'Droid Sans';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Droid Sans'), local('DroidSans'), url('DroidSans.woff') format('woff');
+}
+</style>
+<link href='http://fonts.googleapis.com/css?family=Andika|Cantarell:400,700,400italic' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Droid+Sans+Mono' rel='stylesheet' type='text/css'>
+<script src="assets/jquery-1.6.1.min.js"></script>
+<link type="text/css" rel="stylesheet" href="assets/style.css"/>
+<style type="text/css">
+#bottom_navi {
+  font-size: larger;
+  margin: 8px;
+}
+</style>
+<link type="text/css" rel="stylesheet" href="assets/assert.css"/>
+<link type="text/css" rel="stylesheet" href="assets/prettify.css"/>
+<script type="text/javascript" src="assets/prettify.js"></script>
+<!-- Script runner -->
+<script type="text/javascript" src="assets/runner.js"></script>
+  </head>
+<body>
+  <div id="wrapper">
+    <div id="header">
+      <div id="brand">
+        <h1>Mixu's Node book</h1>
+        <span>A book about using Node.js</span>
+      </div>
+      <div id="navi">
+        <form class="search" action="http://www.google.com/search">
+          <input type="hidden" name="as_sitesearch" value="book.mixu.net">
+          <input type="text" name="as_q" value="" class="search_field">
+          <input type="submit" value="Search" class="search_btn">
+        </form>
+      </div>
+    </div>
+
+    <div class="clear">
+      <hr>
+    </div>
+     <!-- Main -->
+
+    <div id="main">
+      <div id="container">
+        <div id="content" class="post">
+<h1 id="-chapter_number-node-js-http-https">10. Node.js: HTTP, HTTPS</h1>
+<div class="summary">
+
+This chapter covers the HTTP and HTTPS modules.
+
+</div>
+
+<p>Just a reminder: the coverage is limited to common use cases; I will go into more depth in the chapter on Controllers about specific topics such as routing and sessions.</p>
+<h2 id="-chapter_number-1-http-server">10.1 HTTP server</h2>
+<table>
+  <tr><td colspan="2">
+
+### HTTP server
+</td></tr>
+  <tr>
+    <td>
+      Methods
+
+<em>   <a href="http://nodejs.org/api/http.html#http.createServer">http.createServer([requestListener])</a>
+</em>   <a href="http://nodejs.org/api/http.html#server.listen">server.listen(port, [hostname], [callback])</a>
+<em>   <a href="http://nodejs.org/api/http.html#server.listen">server.listen(path, [callback])</a>
+</em>   <a href="http://nodejs.org/api/http.html#server.close">server.close()</a>
+    </td>
+    <td>
+      Events
+
+<em>   <a href="http://nodejs.org/api/http.html#event_request_">request</a>
+</em>   <a href="http://nodejs.org/api/http.html#event_connection_">connection</a>
+<em>   <a href="http://nodejs.org/api/http.html#event_close_">close</a>
+</em>   <a href="http://nodejs.org/api/http.html#event_checkContinue_">checkContinue</a>
+<em>   <a href="http://nodejs.org/api/http.html#event_upgrade_">upgrade</a>
+</em>   <a href="http://nodejs.org/api/http.html#event_clientError_">clientError</a>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <strong>Server request</strong>
+
+      Methods
+
+<em>   <a href="http://nodejs.org/api/http.html#request.setEncoding">setEncoding(encoding=null)</a>
+</em>   <a href="http://nodejs.org/api/http.html#request.pause">pause()</a>
+<em>   <a href="http://nodejs.org/api/http.html#request.resume">resume()</a>
+      Events
+
+</em>   <a href="http://nodejs.org/api/http.html#event_data_">data</a>
+<em>   <a href="http://nodejs.org/api/http.html#event_end_">end</a>
+</em>   <a href="http://nodejs.org/api/http.html#event_close_">close</a>
+      Properties
+
+<em>   <a href="http://nodejs.org/api/http.html#request.method">method</a>
+</em>   <a href="http://nodejs.org/api/http.html#request.url">url</a>
+<em>   <a href="http://nodejs.org/api/http.html#request.headers">headers</a>
+</em>   <a href="http://nodejs.org/api/http.html#request.trailers">trailers</a>
+<em>   <a href="http://nodejs.org/api/http.html#request.httpVersion">httpVersion</a>
+</em>   <a href="http://nodejs.org/api/http.html#request.connection">connection</a>
+    </td>
+    <td>
+      <strong>Server response</strong>
+
+      Methods
+
+<em>   <a href="http://nodejs.org/api/http.html#response.writeContinue">writeContinue()</a>
+</em>   <a href="http://nodejs.org/api/http.html#response.writeHead">writeHead(statusCode, [reasonPhrase], [headers])</a>
+<em>   <a href="http://nodejs.org/api/http.html#response.setHeader">setHeader(name, value)</a>
+</em>   <a href="http://nodejs.org/api/http.html#response.getHeader">getHeader(name)</a>
+<em>   <a href="http://nodejs.org/api/http.html#response.removeHeader">removeHeader(name)</a>
+</em>   <a href="http://nodejs.org/api/http.html#response.write">write(chunk, encoding=&#39;utf8&#39;)</a>
+<em>   <a href="http://nodejs.org/api/http.html#response.addTrailers">addTrailers(headers)</a>
+</em>   <a href="http://nodejs.org/api/http.html#response.end">end([data], [encoding])</a>
+      Properties
+
+*   <a href="http://nodejs.org/api/http.html#response.statusCode">statusCode</a>
+    </td>
+  </tr>
+</table>
+
+<p>Creating an HTTP server is simple: after requiring the http module, you call createServer, then instruct the server to listen on a particular port:</p>
+<pre class="prettyprint">var http = require('http');
+var server = http.createServer(function(request, response) {
+  // Read the request, and write back to the response
+});
+server.listen(8080, 'localhost');
+</pre>
+
+<p>The callback function you pass to http.createServer is called every time a client makes a request to the server. The callback should take two parameters - a request and a response - and send back HTML or some other output to the client.</p>
+<p>The request is used to determine what should be done (e.g. what path on the server was requested, what GET and POST parameters were sent). The response allows us to write output back to the client.</p>
+<p>The other API functions related to starting the HTTP server and receiving requests and closing the server are:</p>
+<table>
+<tr><td>http.createServer(requestListener)</td><td>Returns a new web server object. The requestListener is a function which is automatically added to the &#39;request&#39; event.</td></tr>
+
+<tr><td>server.listen(port, [hostname], [callback])</td><td>Begin accepting connections on the specified port and hostname. If the hostname is omitted, the server will accept connections directed to any IPv4 address (INADDR_ANY).
+
+To listen to a unix socket, supply a filename instead of port and hostname.
+
+This function is asynchronous. The last parameter callback will be called when the server has been bound to the port.
+</td></tr>
+
+<tr><td>server.on([eventname], [callback])</td><td>Allows you to bind callbacks to events such as &quot;request&quot;, &quot;upgrade&quot; and &quot;close&quot;.</td></tr>
+<tr><td>server.close()</td><td>Stops the server from accepting new connections.</td></tr>
+</table>
+
+<p>The server object returned by http.createServer() is an EventEmitter (see the previous chapter) - so you can also bind new request handlers using server.on():</p>
+<pre class="prettyprint">
+// create a server with no callback bound to 'request'
+var server = http.createServer().listen(8080, 'localhost');
+// bind a listener to the 'request' event
+server.on('request', function(req, res) {
+  // do something with the request
+});
+</pre>
+
+<p>The other events that the HTTP server emits are not particularly interesting for daily use, so let&#39;s look at the Request and Response objects.</p>
+<h3 id="-chapter_number-1-1-the-server-request-object-http-serverrequest">10.1.1 The Server Request object - http.ServerRequest</h3>
+<p>The first parameter of the request handler callback is a ServerRequest object. ServerRequests are <a href="ch9.html">Readable Streams</a>, so we can bind to the &quot;data&quot; and &quot;end&quot; events to access the request data (see further below).</p>
+<p>The Request object contains three interesting properties:</p>
+<table>
+<tr><td>request.method</td><td>The request method as a string. Read only.
+
+Example: &#39;GET&#39;, ‘POST’, &#39;DELETE&#39;.
+</td></tr>
+<tr><td>request.url</td><td>Request URL string.
+
+Example: ‘/’, ‘/user/1’, /‘post/new/?param=value’
+</td></tr>
+<tr><td>request.headers</td><td>A read only object, indexed by the name of the header (converted to lowercase), containing the values of the headers.
+
+Example: see below.
+</td></tr>
+</table>
+
+<p><strong>request.url</strong> The most important property is request.url, which is used to determine which page was requested and what to do with the request.</p>
+<p>In the simple messaging application example, we briefly saw how this property was used to determine what to do with client requests. We will go into further depth when we discuss routing in web applications in the chapter on Controllers.</p>
+<p>Checking <strong>request.method</strong> tells us what <a href="http://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol#Request_methods">HTTP method</a> was used to retrieve the page, the most common of which are GET and POST. GET requests retrieve a resource, and may have additional parameters passed as part of request.url. POST requests are generally the result of form submissions and their data must be read from the request separately (see below).</p>
+<p><strong>request.headers</strong> allows us read-only access to the headers. HTTP cookies are transmitted in the headers, so we need to parse the headers to access the cookies. User agent information is also passed in the request headers.</p>
+<p>You can access all of this information through the first parameter of your request handler callback:</p>
+<pre class="prettyprint">
+var http = require('http');
+var server = http.createServer(function(request, response) {
+  console.log(request);
+});
+server.listen(8080, 'localhost');
+</pre>
+
+<p>Once you point your browser to <a href="http://localhost:8080/">http://localhost:8080/</a>, this will print out all the different properties of the current HTTP request, which includes a number of more advanced properties:</p>
+<pre class="prettyprint">
+{
+  socket: { … },
+  connection: { … },
+  httpVersion: '1.1',
+  complete: false,
+  headers:
+    {
+      host: 'localhost:8080',
+      connection: 'keep-alive',
+      'cache-control': 'max-age=0',
+      'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) ...',
+      accept: 'application/xml,application/xhtml+xml ...',
+      'accept-encoding': 'gzip,deflate,sdch',
+      'accept-language': 'en-US,en;q=0.8',
+      'accept-charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.3'
+     },
+  trailers: {},
+  readable: true,
+  url: '/',
+  method: 'GET',
+  statusCode: null,
+  client:  { … },
+  httpVersionMajor: 1,
+  httpVersionMinor: 1,
+  upgrade: false
+}
+</pre>
+
+<h4 id="-chapter_number-1-1-1-parsing-data">10.1.1.1 Parsing data</h4>
+<p>There are several different formats through which an HTTP server can receive requests. The most commonly used formats are:</p>
+<ul class="list">
+<li>HTTP GET - passed via request.url</li>
+<li>HTTP POST requests - passed as “data” events</li>
+<li>cookies - passed via request.headers.cookies</li>
+</ul>
+<h4 id="-chapter_number-1-1-2-parsing-get-requests">10.1.1.2 Parsing GET requests</h4>
+<p>The request.url parameter contains the URL for the current request. GET parameters are passed as a part of this string. The <a href="http://nodejs.org/api/url.html">URL module</a> provides three functions which can be used to work with URLs:</p>
+<ul class="list">
+<li><code>url.parse(urlStr, parseQueryString = false)</code>: Parses a URL string and returns an object which contains the various parts of the URL.</li>
+<li><code>url.format(urlObj)</code>: Accepts a parsed URL object and returns the string. Does the reverse of url.parse().</li>
+<li><code>url.resolve(from, to)</code>: Resolves a given URL relative to a base URL as a browser would for an anchor tag.</li>
+</ul>
+<p>The url.parse() function can be used to parse a URL:</p>
+<pre class="prettyprint">
+var url = require('url');
+var url_parts = url.parse(req.url, true);
+</pre>
+
+<p>By passing true as the second parameter (parseQueryString), you get an additional &quot;query&quot; key that contains the parsed query string. For example:</p>
+<pre class="prettyprint">
+var url = require('url');
+console.log( url.parse(
+    'http://user:pass@host.com:8080/p/a/t/h?query=string#hash', true
+  ));
+</pre>
+
+<p>Returns the following object:</p>
+<pre class="prettyprint">
+{
+  href: 'http://user:pass@host.com:8080/p/a/t/h?query=string#hash',
+  protocol: 'http:',
+  host: 'user:pass@host.com:8080',
+  auth: 'user:pass',
+  hostname: 'host.com',
+  port: '8080',
+  pathname: '/p/a/t/h',
+  search: '?query=string',
+  query: { query: 'string' },
+  hash: '#hash',
+  slashes: true
+}
+</pre>
+
+<p>Of these result values, there are three are most relevant for data prosessing in the controller: pathname (the URL path), query (the query string) and hash (the hash fragment).</p>
+<h4 id="-chapter_number-1-1-3-parsing-post-requests">10.1.1.3 Parsing POST requests</h4>
+<p>Post requests transmit their data as the body of the request. To access the data, you can buffer the data to a string in order to parse it. The data is accessible through the “data” events emitted by the request. When all the data has been received, the “end” event is emitted:</p>
+<pre class="prettyprint">
+function parsePost(req, callback) {
+  var data = '';
+  req.on('data', function(chunk) {
+    data += chunk;
+  });
+  req.on('end', function() {
+    callback(data);
+  });
+}
+</pre>
+
+<p>POST requests can be in multiple different encodings. The <a href="http://www.w3.org/TR/html4/interact/forms.html#h-17.13.4">two most common encodings are</a>: application/x-www-form-urlencoded and multipart/form-data.</p>
+<h4 id="application-x-www-form-urlencoded">application/x-www-form-urlencoded</h4>
+<pre>
+name=John+Doe&amp;gender=male&amp;family=5&amp;city=kent&amp;city=miami&amp;other=abc%0D%0Adef&amp;nickname=J%26D
+</pre>
+
+<p>application/x-www-form-urlencoded data is encoded like a GET request. It&#39;s the default encoding for forms and used for most textual data.</p>
+<p>The <a href="http://nodejs.org/api/querystring.html">QueryString module</a> provides two functions:</p>
+<ul class="list">
+<li><code>querystring.parse(str, sep=’&amp;amp;’, eq=’=’)</code>: Parses a GET query string and returns an object that contains the parameters as properties with values. Example: qs.parse(‘a=b&amp;c=d’) would return {a: ‘b’, c: ‘d’}.</li>
+<li><code>querystring.stringify(obj, sep=’&amp;amp;’, eq=’=’)</code>: Does the reverse of querystring.parse(); takes an object with properties and values and returns a string. Example: qs.stringify({a: ‘b’}) would return ‘a=b’.</li>
+</ul>
+<p>You can use querystring.parse to convert POST data into an object:</p>
+<pre class="prettyprint">
+var qs = require('querystring');
+var data = '';
+req.on('data', function(chunk) {
+  data += chunk;
+});
+req.on('end', function() {
+  var post = qs.parse(data);
+  console.log(post);
+});
+</pre>
+
+<h4 id="multipart-form-data">multipart/form-data</h4>
+<pre>
+Content-Type: multipart/form-data; boundary=AaB03x
+
+--AaB03x
+Content-Disposition: form-data; name="submit-name"
+
+Larry
+--AaB03x
+Content-Disposition: form-data; name="files"; filename="file1.txt"
+Content-Type: text/plain
+
+... contents of file1.txt ...
+--AaB03x--
+</pre>
+
+<p>multipart/form-data is used for binary files. This encoding is somewhat complicated to decode, so I won&#39;t provide a snippet. Instead, have a look at how it&#39;s done in:</p>
+<ul class="list">
+<li><a href="https://github.com/felixge/node-formidable/tree/master/lib">felixge&#39;s node-formidable</a></li>
+<li><a href="https://github.com/visionmedia/connect-form">visionmedia&#39;s connect-form</a></li>
+</ul>
+<h3 id="-chapter_number-1-2-the-server-response-object-http-serverresponse">10.1.2 The Server Response object - http.ServerResponse</h3>
+<p>The second parameter of the request handler callback is a ServerResponse object. ServerResponses are <a href="ch9.html">Writable Streams</a>, so we write() data and call end() to finish the response.</p>
+<h4 id="-chapter_number-1-2-1-writing-response-data">10.1.2.1 Writing response data</h4>
+<p>The code below shows how you can write back data from the server.</p>
+<pre class="prettyprint">
+var http = require('http'),
+    url = require('url');
+var server = http.createServer().listen(8080, 'localhost');
+server.on('request', function(req, res) {
+  var url_parts = url.parse(req.url, true);
+  switch(url_parts.pathname) {
+    case '/':
+    case '/index.html':
+      res.write('&lt;html&gt;&lt;body&gt;Hello!&lt;/body&gt;&lt;/html&gt;');
+      break;
+    default:
+      res.write('Unknown path: ' + JSON.stringify(url_parts));
+  }
+  res.end();
+});
+</pre>
+
+<p>Note that response.end() must be called on each response to finish the response and close the connection.</p>
+<h4 id="-chapter_number-1-2-2-common-response-headers">10.1.2.2 Common response headers</h4>
+<p>Some common uses for<a href="http://www.cs.tut.fi/~jkorpela/http.html">HTTP headers</a> include:</p>
+<ul class="list">
+<li>Specifying the content type (<a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.17">content-type</a>)</li>
+<li>Redirecting requests (<a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.30">location</a>)</li>
+<li>Specifying the filename and size of a download (<a href="http://en.wikipedia.org/wiki/MIME#Content-Disposition">content-disposition</a>, <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.13">content-length</a>)</li>
+<li>Setting cookies (<a href="http://en.wikipedia.org/wiki/HTTP_cookie">set-cookie</a>)</li>
+<li>Specifying compression (<a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.11">content-encoding</a>)</li>
+<li>Controlling caching (<a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9">cache-control</a>, <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.21">expires</a>, <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.19">etag</a>)</li>
+</ul>
+<p>I will only cover the first two use cases, since the focus here is on how to use the HTTP API rather than on HTTP 1.1 itself.</p>
+<h4 id="headers-and-write-">Headers and write()</h4>
+<p>HTTP headers have to be sent before the request data is sent (that&#39;s why they are called headers).</p>
+<p>Headers can be written in two ways:</p>
+<ul class="list">
+<li>Explicitly using <code>response.writeHead(statusCode, [reasonPhrase], [headers])</code>. In this case, you have to specify all the headers in one go, along with the HTTP status code and an optional human-readable reasonPhrase.</li>
+<li>Implicitly: the first time <code>response.write()</code> is called, the currently set implicit headers are sent.</li>
+</ul>
+<p>The API has the details:</p>
+<table>
+<tr><td>response.writeHead(statusCode, [reasonPhrase], [headers])</td><td>Sends a response header to the request. The status code is a 3-digit HTTP status code, like 404. The last argument, headers, are the response headers. Optionally one can give a human-readable reasonPhrase as the second argument.</td></tr>
+<tr><td>response.statusCode</td><td>When using implicit headers (not calling response.writeHead() explicitly), this property controls the status code that will be send to the client when the headers get flushed.</td></tr>
+<tr><td>response.setHeader(name, value)</td><td>Sets a single header value for implicit headers. If this header already exists in the to-be-sent headers, it&#39;s value will be replaced. Use an array of strings here if you need to send multiple headers with the same name.</td></tr>
+<tr><td>response.getHeader(name)</td><td>Reads out a header that&#39;s already been queued but not sent to the client. Note that the name is case insensitive. This can only be called before headers get implicitly flushed.</td></tr>
+<tr><td>response.removeHeader(name)</td><td>Removes a header that&#39;s queued for implicit sending.</td></tr>
+</table>
+
+<p>Generally, using implicit headers is simpler since you can change the individual headers up until the point when the first call to response.write() is made.</p>
+<h4 id="setting-the-content-type-header">Setting the content/type header</h4>
+<p>Browsers expect to receive a content-type header for all content. This header contains the <a href="http://en.wikipedia.org/wiki/Internet_media_type">MIME type</a> for the content/file that is sent, which is used to determine what the browser should do with the data (e.g. display it as an image).</p>
+<p>In our earlier examples, we did not set a content-type header, because the examples did not serve content other than HTML and plaintext. However, in order to support binary files like images and in order to send formatted data such as JSON and XML back, we need to explicitly specify the content type.</p>
+<p>Usually, the mime type is determined by the server based on the file extension:</p>
+<pre class="run prettyprint">
+var map = {
+  '.ico': 'image/x-icon',
+  '.html': 'text/html',
+  '.js': 'text/javascript',
+  '.json': 'application/json',
+  '.css': 'text/css',
+  '.png': 'image/png'
+};
+var ext = '.css';
+if(map[ext]) {
+  console.log('Content-type', map[ext]);
+}
+</pre>
+
+<p>There are ready-made libraries that you can use to determine the mime type of a file, such as:</p>
+<ul class="list">
+<li><a href="https://github.com/bentomas/node-mime">bentomas/node-mime</a></li>
+<li><a href="https://github.com/creationix/simple-mime">creationix/simple-mime</a></li>
+</ul>
+<p>To set the content-type header from a filename:</p>
+<pre class="prettyprint">
+var ext = require('path').extname(filename);
+if(map[ext]) {
+  res.setHeader('Content-type', map[ext]);
+}
+</pre>
+
+<p>We will look at how to read files in the next chapter.</p>
+<h4 id="redirecting-to-a-different-url">Redirecting to a different URL</h4>
+<p>Redirects are performed using the Location: header. For example, to redirect to /index.html:</p>
+<pre class="prettyprint">
+res.statusCode = 302;
+res.setHeader('Location', '/index.html');
+res.end();
+</pre>
+
+<h2 id="-chapter_number-2-http-client">10.2 HTTP client</h2>
+<p>There is also a HTTP client API, which allows you to make HTTP requests and read content from other websites.</p>
+<table>
+  <tr>
+    <td colspan="2">
+
+### HTTP client
+
+      Methods
+
+<em>   <a href="http://nodejs.org/api/http.html#http.request">http.request(options, callback)</a>
+</em>   <a href="http://nodejs.org/api/http.html#http.get">http.get(options, callback)</a>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <strong>Client request</strong>
+
+      Methods
+
+<em>   <a href="http://nodejs.org/api/http.html#request.write">write(chunk, encoding=&#39;utf8&#39;)</a>
+</em>   <a href="http://nodejs.org/api/http.html#request.end">end([data], [encoding])</a>
+<em>   <a href="http://nodejs.org/api/http.html#request.abort">abort()</a>
+</em>   <a href="http://nodejs.org/api/http.html#request.setTimeout">setTimeout(timeout, [callback])</a>
+<em>   <a href="http://nodejs.org/api/http.html#request.setNoDelay">setNoDelay(noDelay=true)</a>
+</em>   <a href="http://nodejs.org/api/http.html#request.setSocketKeepAlive">setSocketKeepAlive(enable=false, [initialDelay])</a>
+      Events
+
+<em>   <a href="http://nodejs.org/api/http.html#event_response_">response</a>
+</em>   <a href="http://nodejs.org/api/http.html#event_socket_">socket</a>
+<em>   <a href="http://nodejs.org/api/http.html#event_upgrade_">upgrade</a>
+</em>   <a href="http://nodejs.org/api/http.html#event_continue_">continue</a>
+    </td>
+    <td>
+      <strong>Client response</strong>
+
+      Methods
+
+<em>   <a href="http://nodejs.org/api/http.html#response.setEncoding">setEncoding(encoding=null)</a>
+</em>   <a href="http://nodejs.org/api/http.html#response.pause">pause()</a>
+<em>   <a href="http://nodejs.org/api/http.html#response.resume">resume()</a>
+      Events
+
+</em>   <a href="http://nodejs.org/api/http.html#event_data_">data</a>
+<em>   <a href="http://nodejs.org/api/http.html#event_end_">end</a>
+</em>   <a href="http://nodejs.org/api/http.html#event_close_">close</a>
+      Properties
+
+<em>   <a href="http://nodejs.org/api/http.html#response.statusCode">statusCode</a>
+</em>   <a href="http://nodejs.org/api/http.html#response.httpVersion">httpVersion</a>
+<em>   <a href="http://nodejs.org/api/http.html#response.headers">headers</a>
+</em>   <a href="http://nodejs.org/api/http.html#response.trailers">trailers</a>
+    </td>
+  </tr>
+</table>
+
+<h3 id="-chapter_number-2-1-issuing-a-simple-get-request">10.2.1 Issuing a simple GET request</h3>
+<table>
+<tr><td><code>http.get(options, callback)</code></td><td>A convinience method to make HTTP GET requests.</td></tr>
+</table>
+
+<p>http.get() returns a http.ClientRequest object, which is a Writable Stream.</p>
+<p>The callback passed to http.get() will receive a http.ClientResponse object when the request is made. The ClientResponse is a Readable Stream.</p>
+<p>To send a simple GET request, you can use <code>http.get</code>. You need to set the following options:</p>
+<ul class="list">
+<li>host: the domain or IP address of the server</li>
+<li>port: the port (e.g. 80 for HTTP)</li>
+<li>path: the request path, including the query string (e.g. &#39;index.html?page=12&#39;)</li>
+</ul>
+<p>To read the response data, you should attach a callback to the &#39;data&#39; and &#39;end&#39; events of the returned object. You will most likely want to store the data somewhere from the &#39;data&#39; events, then process it as a whole on the &#39;end&#39; event.</p>
+<p>The following code issues a GET request to www.google.com/, reads the &#39;data&#39; and &#39;end&#39; events and outputs to the console.</p>
+<pre class="prettyprint">
+var http = require('http');
+var options = {
+    host: 'www.google.com',
+    port: 80,
+    path: '/'
+  };
+var req = http.get(options, function(response) {
+  // handle the response
+  var res_data = '';
+  response.on('data', function(chunk) {
+    res_data += chunk;
+  });
+  response.on('end', function() {
+    console.log(res_data);
+  });
+});
+req.on('error', function(e) {
+  console.log("Got error: " + e.message);
+});
+</pre>
+
+<p>To add GET query parameters from an object, use the querystring module:</p>
+<pre class="prettyprint">
+var qs = require('querystring');
+var options = {
+    host: 'www.google.com',
+    port: 80,
+    path: '/'+'?'+qs.stringify({q: 'hello world'})
+  };
+// .. as in previous example
+</pre>
+
+<p>As you can see above, GET parameters are sent as a part of the request path.</p>
+<h3 id="-chapter_number-2-2-issuing-post-delete-and-other-methods">10.2.2 Issuing POST, DELETE and other methods</h3>
+<table>
+<tr><td><code>http.request(options, callback)</code></td><td>Issue an HTTP request. Host, port and path are specified in the options object parameter. Calls the callback with an http.ClientRequest object with the new request.</td></tr>
+</table>
+
+<p>To issue POST, DELETE or other requests, you need to use <code>http.request</code> and set the method in the options explicitly:</p>
+<pre class="prettyprint">
+var opts = {
+    host: 'www.google.com',
+    port: 80,
+    method: 'POST'
+    path: '/',
+    headers: {}
+  };
+</pre>
+
+<p>To send the data along with the POST request, call req.write() with the data you want to send along with the request before calling req.end(). To ensure that the receiving server can decode the POST data, you should also set the content-type.</p>
+<p>There are two common encodings used to encode POST request data: application/x-www-form-urlencoded</p>
+<pre class="prettyprint">
+// POST encoding
+opts.headers['Content-Type'] = 'application/x-www-form-urlencoded';
+req.data = qs.stringify(req.data);
+opts.headers['Content-Length'] = req.data.length;
+</pre>
+
+<p>and application/json:</p>
+<pre class="prettyprint">
+// JSON encoding
+opts.headers['Content-Type'] = 'application/json';
+req.data = JSON.stringify(req.data);
+opts.headers['Content-Length'] = req.data.length;
+</pre>
+
+<p>Making a request is very similar to making a GET request:</p>
+<pre class="prettyprint">
+var req = http.request(opts, function(response) {
+  response.on('data', function(chunk) {
+    res_data += chunk;
+  });
+  response.on('end', function() {
+    callback(res_data);
+  });
+});
+req.on('error', function(e) {
+  console.log("Got error: " + e.message);
+});
+// write the data
+if (opts.method != 'GET') {
+  req.write(req.data);
+}
+req.end();
+</pre>
+
+<p>Note, however, that you need to call req.end() after http.request(). This is because http.ClientRequest supports sending a request body (with POST or other data) and if you do not call req.end(), the request remains &quot;pending&quot; and will most likely not return any data before you end it explicitly.</p>
+<h3 id="-chapter_number-2-3-writing-a-simple-http-proxy">10.2.3 Writing a simple HTTP proxy</h3>
+<p>Since the HTTP server and client expose Readable/Writable streams, we can write a simple HTTP proxy simply by pipe()ing the two together.</p>
+<p>The ServerRequest is Readable, while the ClientRequest is Writable. Similarly, the ClientResponse is Readable, while the ServerResponse is Writable.</p>
+<pre class="prettyprint">
+var server = http.createServer(function(sreq, sres) {
+  var url_parts = url.parse(sreq.url);
+  var opts = {
+    host: 'google.com',
+    port: 80,
+    path: url_parts.pathname,
+    method: sreq.method,
+    headers: sreq.headers
+  };
+  var creq = http.request(opts, function(cres) {
+    sres.writeHead(cres.statusCode, cres.headers);
+    cres.pipe(sres); // pipe client to server response
+  });
+  sreq.pipe(creq); // pipe server to client request
+});
+server.listen(80, '0.0.0.0');
+console.log('Server running.');
+</pre>
+
+<p>The code above causes any requests made to <a href="http://localhost:80/">http://localhost:80/</a> to be proxied to Google. You can pass queries too, such as <a href="http://localhost:80/search?q=Node.js">http://localhost:80/search?q=Node.js</a></p>
+<h2 id="-chapter_number-3-https-server-and-client">10.3 HTTPS server and client</h2>
+<p>The HTTPS server and client API is almost identical to the HTTP API, so pretty much everything said above applies to them. In fact, the client API is the same, and the HTTPS server only differs in that it needs a certificate file.</p>
+<p>The HTTPS server library allows you to serve files over SSL/TLS. To get started, you need to have a SSL certificate from a certificate authority or you need to generate one yourself. Of course, self-generated certificates will generally trigger warnings in the browser.</p>
+<h3 id="-chapter_number-3-1-configuration-generating-your-own-certificate">10.3.1 Configuration: generating your own certificate</h3>
+<p>Here is how you can generate a self-signed certificate:</p>
+<pre>
+openssl genrsa -out privatekey.pem 1024
+openssl req -new -key privatekey.pem -out certrequest.csr
+openssl x509 -req -in certrequest.csr -signkey privatekey.pem -out certificate.pem
+</pre>
+
+<p>Note that this certificate will trigger warnings in your browser, since it is self-signed.</p>
+<h3 id="-chapter_number-3-2-starting-the-server">10.3.2 Starting the server</h3>
+<p>To start the HTTPS server, you need to read the private key and certificate. Note that <code>readFileSync</code> is used in this case, since blocking to read the certificates when the server starts is acceptable:</p>
+<pre class="prettyprint">
+// HTTPS
+var https = require('https');
+// read in the private key and certificate
+var pk = fs.readFileSync('./privatekey.pem');
+var pc = fs.readFileSync('./certificate.pem');
+var opts = { key: pk, cert: pc };
+// create the secure server
+var serv = https.createServer(opts, function(req, res) {
+  console.log(req);
+  res.end();
+});
+// listen on port 443
+serv.listen(443, '0.0.0.0');
+</pre>
+
+<p>Note that on Linux, you may need to run the server with higher privileges to bind to port 443. Other than needing to read a private key and certificate, the HTTPS server works like the HTTP server.</p>
+
+<div id="bottom_navi">
+  <a href="ch9.html"> &lt; &lt; Previous Chapter</a> | <a href="ch11.html">Next Chapter &gt; &gt;</a>
+</div>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'mixu'; // required: replace example with your forum shortname
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+          </div>
+        </div>
+      </div>
+      <div id="sidebar">
+        <h3><a href="index.html">Home</a></h3>
+        <h3><a href="ch9.html">Previous Chapter</a></h3>
+        <h3><a href="ch11.html">Next Chapter</a></h3>
+        <br>
+        <p>
+          <a href="http://book.mixu.net/mixu-node-book.mobi" style="color: gray;"> .mobi (Kindle)</a>
+        </p>
+        <p>
+          <a href="http://book.mixu.net/mixu-node-book.epub" style="color: gray;">epub</a>
+        </p>
+        <p>
+          <a href="http://book.mixu.net/single.html" style="color: gray;">Single page HTML</a>
+        </p>
+        <p>
+          <a href="http://www.printfriendly.com/print/v2?url=http://book.mixu.net/single.html" style="color: gray;">PDF</a>
+        </p>
+        <br>
+        <h3>Other books</h3>
+        <ul class="spaced">
+          <li>
+            <a href="http://book.mixu.net/css/">Learn CSS Layout the pedantic way</a> (2015)
+          </li>
+          <li>
+            <a href="http://book.mixu.net/distsys/">Distributed systems: for fun and profit</a> (2013)
+          </li>
+          <li>
+            <a href="http://singlepageappbook.com/">Single page apps in depth</a> (2013)
+          </li>
+        </ul>
+      </div>
+    <div class="clear">
+    </div>
+
+    <div id="footer">
+      <p>A book about <a href="http://nodejs.org/">Node</a> by <a href="http://mixu.net/">Mikito Takada</a>.</p>
+    </div>
+    </div>
+  </div>
+
+
+  </div>
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-26716650-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+
+  </script>
+</body>
+</html>

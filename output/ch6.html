@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>6. Objects and classes by example - Mixu&#x27;s Node book</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css">
+@font-face {
+  font-family: 'Droid Sans';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Droid Sans'), local('DroidSans'), url('DroidSans.woff') format('woff');
+}
+</style>
+<link href='http://fonts.googleapis.com/css?family=Andika|Cantarell:400,700,400italic' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Droid+Sans+Mono' rel='stylesheet' type='text/css'>
+<script src="assets/jquery-1.6.1.min.js"></script>
+<link type="text/css" rel="stylesheet" href="assets/style.css"/>
+<style type="text/css">
+#bottom_navi {
+  font-size: larger;
+  margin: 8px;
+}
+</style>
+<link type="text/css" rel="stylesheet" href="assets/assert.css"/>
+<link type="text/css" rel="stylesheet" href="assets/prettify.css"/>
+<script type="text/javascript" src="assets/prettify.js"></script>
+<!-- Script runner -->
+<script type="text/javascript" src="assets/runner.js"></script>
+  </head>
+<body>
+  <div id="wrapper">
+    <div id="header">
+      <div id="brand">
+        <h1>Mixu's Node book</h1>
+        <span>A book about using Node.js</span>
+      </div>
+      <div id="navi">
+        <form class="search" action="http://www.google.com/search">
+          <input type="hidden" name="as_sitesearch" value="book.mixu.net">
+          <input type="text" name="as_q" value="" class="search_field">
+          <input type="submit" value="Search" class="search_btn">
+        </form>
+      </div>
+    </div>
+
+    <div class="clear">
+      <hr>
+    </div>
+     <!-- Main -->
+
+    <div id="main">
+      <div id="container">
+        <div id="content" class="post">
+<h1 id="-chapter_number-objects-and-classes-by-example">6. Objects and classes by example</h1>
+<div class="summary">In this chapter, I:
+
+<em>   cover OOP in Javascript by example
+</em>   point out a few caveats and recommended solutions
+</div>
+
+<p>I&#39;m not covering the theory behind this, but I recommend that you start by learning more about the prototype chain, because understanding the prototype chain is essential to working effectively with JS.</p>
+<p>The concise explanation is:</p>
+<ul class="list">
+  <li>Javascript is an object-oriented programming language that supports <i>delegating inheritance</i> based on <i>prototypes</i>.</li>
+  <li>Each object has a prototype property, which refers to another (regular) object.</li>
+  <li>Properties of an object are looked up from two places:
+    <ol class="list">
+      <li>the object itself (Obj.foo), and
+      </li><li>if the property does not exist, on the prototype of the object (Obj.prototype.foo).</li>
+    </ol>
+    </li>
+  <li>Since this lookup is performed recursively (e.g. Obj.foo, Obj.prototype.foo, Obj.prototype.prototype.foo), each object can be said to have a prototype chain.</li>
+  <li>Assigning to an undefined property of an object will create that property on the object. Properties of the object itself take precedence over properties of prototypes.</li>
+  <li>New objects are created using a constructor, which is a regular function invoked using <code>new</code></li>
+  <li>The <code>new</code> constructor call (e.g. <code>new Foo()</code>):
+    <ol class="list">
+      <li>creates a new object,</li>
+      <li>sets the prototype of that object to Foo.prototype and </li>
+      <li>passes that as <code>this</code> to the constructor.</li>
+    </ol>
+  </li>
+  <li>The delegating inheritance implemented in Javascript is different from &quot;classical&quot; inheritance: it is based on run time lookups from the prototype property rather than statically defined class constructs. The prototype chain lookup mechanism is the essence of prototypal inheritance.</li>
+</ul>
+
+<p>There are further nuances to the system. Here are my recommendations on what to read:</p>
+<ul class="list">
+<li><a href="http://dmitrysoshnikov.com/ecmascript/chapter-7-1-oop-general-theory/">ECMA-262-3 in detail. Chapter 7.1. OOP: The general theory</a> from Dmitry Soshnikov</li>
+<li><a href="http://dmitrysoshnikov.com/ecmascript/chapter-7.2-oop-ecmascript-implementation/">ECMA-262-3 in detail. Chapter 7.2. OOP: ECMAScript implementation</a> from Dmitry Soshnikov</li>
+<li><a href="https://developer.mozilla.org/en/JavaScript/Guide/Details_of_the_Object_Model">Details of the Object Model</a> from Mozilla</li>
+</ul>
+<p>Let&#39;s look at some applied patterns next:</p>
+<h3 id="class-pattern">Class pattern</h3>
+<pre class="prettyprint">
+// Constructor
+function Foo(bar) {
+  // always initialize all instance properties
+  this.bar = bar;
+  this.baz = 'baz'; // default value
+}
+// class methods
+Foo.prototype.fooBar = function() {
+
+};
+// export the class
+module.exports = Foo;
+</pre>
+
+<p>Instantiating a class is simple:</p>
+<pre class="prettyprint">
+// constructor call
+var object = new Foo('Hello');
+</pre>
+
+<p>Note that I recommend using <code>function Foo() { ... }</code> for constructors instead of <code>var Foo = function() { ... }</code>.</p>
+<p><p>The main benefit is that you get better stack traces from Node when you use a named function. Generating a stack trace from an object with an unnamed constructor function:</p>
+<pre class="prettyprint">
+var Foo = function() { };
+Foo.prototype.bar = function() { console.trace(); };
+
+var f = new Foo();
+f.bar();
+</pre>
+
+<p>... produces something like this:</p>
+<pre>
+Trace:
+    at [object Object].bar (/home/m/mnt/book/code/06_oop/constructors.js:3:11)
+    at Object.<anonymous> (/home/m/mnt/book/code/06_oop/constructors.js:7:3)
+    at Module._compile (module.js:432:26)
+    at Object..js (module.js:450:10)
+    at Module.load (module.js:351:31)
+    at Function._load (module.js:310:12)
+    at Array.0 (module.js:470:10)
+    at EventEmitter._tickCallback (node.js:192:40)
+</pre>
+
+<p>... while using a named function</li></p>
+<pre class="prettyprint">
+function Baz() { };
+Baz.prototype.bar = function() { console.trace(); };
+
+var b = new Baz();
+b.bar();
+</pre>
+
+<p><p>... produces a stack trace with the name of the class:</p>
+<pre>
+Trace:
+    at Baz.bar (/home/m/mnt/book/code/06_oop/constructors.js:11:11)
+    at Object.<anonymous> (/home/m/mnt/book/code/06_oop/constructors.js:15:3)
+    at Module._compile (module.js:432:26)
+    at Object..js (module.js:450:10)
+    at Module.load (module.js:351:31)
+    at Function._load (module.js:310:12)
+    at Array.0 (module.js:470:10)
+    at EventEmitter._tickCallback (node.js:192:40)
+</pre>
+
+<p>To add private shared (among all instances of the class) variables, add them to the top level of the module:</p>
+<pre class="prettyprint">
+// Private variable
+var total = 0;
+
+// Constructor
+function Foo() {
+  // access private shared variable
+  total++;
+};
+// Expose a getter (could also expose a setter to make it a public variable)
+Foo.prototype.getTotalObjects = function(){
+  return total;
+};
+</pre>
+
+<h3 id="avoid-assigning-variables-to-prototypes">Avoid assigning variables to prototypes</h3>
+<p>If you want to define a default value for a property of an instance, define it in the constructor function.</p>
+<p>Prototypes should not have properties that are not functions, because prototype properties that are not primitives (such as arrays and objects) will not behave as one would expect, since they will use the instance that is looked up from the prototype. Example for Dimitry Sosnikov&#39;s site:</p>
+<pre class="prettyprint run">
+var Foo = function (name) { this.name = name; };
+Foo.prototype.data = [1, 2, 3]; // setting a non-primitive property
+Foo.prototype.showData = function () { console.log(this.name, this.data); };
+
+var foo1 = new Foo("foo1");
+var foo2 = new Foo("foo2");
+
+// both instances use the same default value of data
+foo1.showData(); // "foo1", [1, 2, 3]
+foo2.showData(); // "foo2", [1, 2, 3]
+
+// however, if we change the data from one instance
+foo1.data.push(4);
+
+// it mirrors on the second instance
+foo1.showData(); // "foo1", [1, 2, 3, 4]
+foo2.showData(); // "foo2", [1, 2, 3, 4]
+</pre>
+
+<p>Hence prototypes should only define methods, not data.</p>
+<p>If you set the variable in the constructor, then you will get the behavior you expect:</p>
+<pre class="prettyprint run">
+function Foo(name) {
+  this.name = name;
+  this.data = [1, 2, 3]; // setting a non-primitive property
+};
+Foo.prototype.showData = function () { console.log(this.name, this.data); };
+var foo1 = new Foo("foo1");
+var foo2 = new Foo("foo2");
+foo1.data.push(4);
+foo1.showData(); // "foo1", [1, 2, 3, 4]
+foo2.showData(); // "foo2", [1, 2, 3]
+</pre>
+
+<h3 id="don-t-construct-by-returning-objects-use-prototype-and-new">Don&#39;t construct by returning objects - use prototype and new</h3>
+<p>For example, construction pattern which returns an object is terrible (<a href="http://bolinfest.com/javascript/inheritance.php">even though</a> it was introduced in &quot;JavaScript: The Good Parts&quot;):</p>
+<pre class="prettyprint">
+function Phone(phoneNumber) {
+  var that = {};
+  // You are constructing a custom object on every call!
+  that.getPhoneNumber = function() {
+    return phoneNumber;
+  };
+  return that;
+};
+// or
+function Phone() {
+  // You are constructing a custom object on every call!
+  return {
+    getPhoneNumber: function() { ... }
+  };
+};
+</pre>
+
+<p>Here, every time we run Phone(), a new object is created with a new property.
+  The V8 runtime cannot optimize this case, since there is no indication that instances of Phone are a class; they look like custom objects to the engine since prototypes are not used. This leads to slower performance.</p>
+<p>It&#39;s also broken in another way: you cannot change the prototype properties of all instances of Phone, since they do not have a common ancestor/prototype object. Prototypes exists for a reason, so use the class pattern described earlier.</p>
+<h3 id="avoid-implementing-classical-inheritance">Avoid implementing classical inheritance</h3>
+<p>I think classical inheritance is in most cases an antipattern in Javascript. Why?</p>
+<p>There are two reasons to have inheritance:</p>
+<ol class="list">
+<li>to support polymorphism in languages that do not have dynamic typing, like C++. The class acts as an interface specification for a type. This provides the benefit of being able to replace one class with another (such as a function that operates on a Shape that can accept subclasses like Circle). However, Javascript doesn&#39;t require you to do this: the only thing that matters is that a method or property can be looked up when called/accessed.</li>
+<li>to reuse code. Here the theory is that you can reuse code by having a hierarchy of items that go from an abstract implementation to a more specific one, and you can thus define multiple subclasses in terms of a parent class. This is sometimes useful, but not that often.</li>
+</ol>
+<p>The disadvantages of inheritance are:</p>
+<ol class="list">
+<li>Nonstandard, hidden implementations of classical inheritance. Javascript doesn&#39;t have a builtin way to define class inheritance, so people invent their own ones. These implementations are similar to each other, but differ in subtle ways.</li>
+<li>Deep inheritance trees. Subclasses are aware of the implementation details of their superclasses, which means that you need to understand both. What you see in the code is not what you get: instead, parts of an implementation are defined in the subclass and the rest are defined piecemeal in the inheritance tree. The implementation is thus sprinkled over multiple files, and you have to mentally recombine those to understand the actual behavior.</li>
+</ol>
+<p>I favor <a href="http://en.wikipedia.org/wiki/Composite_reuse_principle">composition over inheritance</a>:</p>
+<ul class="list">
+<li>Composition - Functionality of an object is made up of an aggregate of different classes by containing instances of other objects.</li>
+<li>Inheritance - Functionality of an object is made up of it&#39;s own functionality plus functionality from its parent classes.</li>
+</ul>
+<h3 id="if-you-must-have-inheritance-use-plain-old-js">If you must have inheritance, use plain old JS</h3>
+<p>If you must implement inheritance, at least avoid using yet another nonstandard implementation / magic function. Here is how you can implement a reasonable facsimile of inheritance in pure ES3 (as long as you follow the rule of never defining properties on prototypes):</p>
+<pre class="prettyprint run">
+function Animal(name) {
+  this.name = name;
+};
+Animal.prototype.move = function(meters) {
+  console.log(this.name+" moved "+meters+"m.");
+};
+
+function Snake() {
+  Animal.apply(this, Array.prototype.slice.call(arguments));
+};
+Snake.prototype = new Animal();
+Snake.prototype.move = function() {
+  console.log("Slithering...");
+  Animal.prototype.move.call(this, 5);
+};
+
+var sam = new Snake("Sammy the Python");
+sam.move();
+</pre>
+
+<p>This is not the same thing as classical inheritance - but it is standard, understandable Javascript and has the functionality that people mostly seek: chainable constructors and the ability to call methods of the superclass.</p>
+<p>Or use <a href="http://nodejs.org/api/util.html#util.inherits">util.inherits()</a> (from the Node.js core). Here is the full implementation:</p>
+<pre class="prettyprint">
+var inherits = function (ctor, superCtor) {
+    ctor.super_ = superCtor;
+    ctor.prototype = Object.create(superCtor.prototype, {
+        constructor: {
+            value: ctor,
+            enumerable: false
+        }
+    });
+};
+</pre>
+
+<p>And a usage example:</p>
+<pre class="prettyprint">
+var util = require('util');
+function Foo() { }
+util.inherits(Foo, EventEmitter);
+</pre>
+
+<p>The only real benefit to util.inherits is that you don&#39;t need to use the actual ancestor name in the Child constructor.</p>
+<p>Note that if you define variables as properties of a prototype, you will experience unexpected behavior (e.g. since variables defined on the prototype of the superclass will be accessible in subclasses but will also be shared among all instances of the subclass).</p>
+<p>As I pointed out with the class pattern, always define all instance variables in the constructor. This forces the properties to exist on the object itself and avoids lookups on the prototype chain for these variables.</p>
+<p>Otherwise, you might accidentally define/access a variable property defined in a prototype. Since the prototype is shared among all instances, this will lead to the unexpected behavior if the variable is not a primitive (e.g. is an Object or an Array). See the earlier example under &quot;Avoid setting variables as properties of prototypes&quot;.</p>
+<h3 id="use-mixins">Use mixins</h3>
+<p>A mixin is a function that adds new functions to the prototype of an object. I prefer to expose an explicit mixin() function to indicate that the class is designed to be mixed into another one:</p>
+<pre class="prettyprint">
+function Foo() { }
+Foo.prototype.bar = function() { };
+Foo.prototype.baz = function() { };
+
+// mixin - augment the target object with the Foo functions
+Foo.mixin = function(destObject){
+  ['bar', 'baz'].forEach(function(property) {
+    destObject.prototype[property] = Foo.prototype[property];
+  });
+};
+
+module.exports = Foo;
+</pre>
+
+<p>Extending the Bar prototype with Foo:</p>
+<pre class="prettyprint">
+var Foo = require('./foo.js');
+function Bar() {}
+Bar.prototype.qwerty = function() {};
+
+// mixin Foo
+Foo.mixin(Bar);
+</pre>
+
+<h3 id="avoid-currying">Avoid currying</h3>
+<p>Currying is a shorthand notation for creating an anonymous function with a new scope that calls another function. In other words, anything you can do using currying can be done using a simple anonymous function and a few variables local to that function.</p>
+<pre class="prettyprint">
+Function.prototype.curry = function() {
+  var fn = this;
+  var args = Array.prototype.slice.call(arguments);
+  return function() {
+    return fn.apply(this, args.concat(Array.prototype.slice.call(arguments, 0)));
+  };
+}
+</pre>
+
+<p>Currying is intriguing, but I haven&#39;t seen a practical use case for it outside of subverting how the <code>this</code> argument works in Javascript.</p>
+<p>Don&#39;t use currying to change the context of a call/the<code>this</code> argument. Use the &quot;self&quot; variable accessed through an anonymous function, since it achieves the same thing but is more obvious.</p>
+<p>Instead of using currying:</p>
+<pre class="prettyprint">
+function foo(a, b, c) { console.log(a, b, c); }
+
+var bar = foo.curry('Hello');
+bar('World', '!');
+</pre>
+
+<p>I think that writing:</p>
+<pre class="prettyprint">
+function foo(a, b, c) { console.log(a, b, c); }
+
+function bar(b, c) { foo('Hello', b, c); }
+bar('World', '!');
+</pre>
+
+<p>is more clear.</p>
+
+<div id="bottom_navi">
+  <a href="ch5.html"> &lt; &lt; Previous Chapter</a> | <a href="ch7.html">Next Chapter &gt; &gt;</a>
+</div>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'mixu'; // required: replace example with your forum shortname
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+          </div>
+        </div>
+      </div>
+      <div id="sidebar">
+        <h3><a href="index.html">Home</a></h3>
+        <h3><a href="ch5.html">Previous Chapter</a></h3>
+        <h3><a href="ch7.html">Next Chapter</a></h3>
+        <br>
+        <p>
+          <a href="http://book.mixu.net/mixu-node-book.mobi" style="color: gray;"> .mobi (Kindle)</a>
+        </p>
+        <p>
+          <a href="http://book.mixu.net/mixu-node-book.epub" style="color: gray;">epub</a>
+        </p>
+        <p>
+          <a href="http://book.mixu.net/single.html" style="color: gray;">Single page HTML</a>
+        </p>
+        <p>
+          <a href="http://www.printfriendly.com/print/v2?url=http://book.mixu.net/single.html" style="color: gray;">PDF</a>
+        </p>
+        <br>
+        <h3>Other books</h3>
+        <ul class="spaced">
+          <li>
+            <a href="http://book.mixu.net/css/">Learn CSS Layout the pedantic way</a> (2015)
+          </li>
+          <li>
+            <a href="http://book.mixu.net/distsys/">Distributed systems: for fun and profit</a> (2013)
+          </li>
+          <li>
+            <a href="http://singlepageappbook.com/">Single page apps in depth</a> (2013)
+          </li>
+        </ul>
+      </div>
+    <div class="clear">
+    </div>
+
+    <div id="footer">
+      <p>A book about <a href="http://nodejs.org/">Node</a> by <a href="http://mixu.net/">Mikito Takada</a>.</p>
+    </div>
+    </div>
+  </div>
+
+
+  </div>
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-26716650-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+
+  </script>
+</body>
+</html>

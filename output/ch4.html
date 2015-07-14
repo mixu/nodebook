@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>4. V8 and Javascript gotchas - Mixu&#x27;s Node book</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css">
+@font-face {
+  font-family: 'Droid Sans';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Droid Sans'), local('DroidSans'), url('DroidSans.woff') format('woff');
+}
+</style>
+<link href='http://fonts.googleapis.com/css?family=Andika|Cantarell:400,700,400italic' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Droid+Sans+Mono' rel='stylesheet' type='text/css'>
+<script src="assets/jquery-1.6.1.min.js"></script>
+<link type="text/css" rel="stylesheet" href="assets/style.css"/>
+<style type="text/css">
+#bottom_navi {
+  font-size: larger;
+  margin: 8px;
+}
+</style>
+<link type="text/css" rel="stylesheet" href="assets/assert.css"/>
+<link type="text/css" rel="stylesheet" href="assets/prettify.css"/>
+<script type="text/javascript" src="assets/prettify.js"></script>
+<!-- Script runner -->
+<script type="text/javascript" src="assets/runner.js"></script>
+  </head>
+<body>
+  <div id="wrapper">
+    <div id="header">
+      <div id="brand">
+        <h1>Mixu's Node book</h1>
+        <span>A book about using Node.js</span>
+      </div>
+      <div id="navi">
+        <form class="search" action="http://www.google.com/search">
+          <input type="hidden" name="as_sitesearch" value="book.mixu.net">
+          <input type="text" name="as_q" value="" class="search_field">
+          <input type="submit" value="Search" class="search_btn">
+        </form>
+      </div>
+    </div>
+
+    <div class="clear">
+      <hr>
+    </div>
+     <!-- Main -->
+
+    <div id="main">
+      <div id="container">
+        <div id="content" class="post">
+<h1 id="-chapter_number-v8-and-javascript-gotchas">4. V8 and Javascript gotchas</h1>
+<div class="summary">In this chapter, I:
+
+<em>   explain why you need a <code>self</code> variable sometimes along with the rules surrounding the <code>this</code> keyword</em>   explain why you might get strange results from <code>for</code> loops along with the basics of the variable scope in Javascript*   show a couple of other minor gotchas that I found confusing
+</div>
+
+<p>There are basically two things that trip people up in Javascript:</p>
+<ol class="list">
+<li>The rules surrounding the &quot;this&quot; keyword and</li>
+<li>Variable scope rules</li>
+</ol>
+<p>In this chapter, I&#39;ll examine these JS gotchas and a couple of V8-related surprises. If you&#39;re feeling pretty confident, then feel free to skim or skip this chapter.</p>
+<h3 id="-chapter_number-1-gotcha-1-this-keyword">4.1 Gotcha #1: this keyword</h3>
+<p>In object-oriented programming languages, the <code>this</code> keyword is used to refer to the current instance of the object. For example, in Java, the value of <code>this</code> always refers to the current instance:</p>
+<pre class="prettyprint lang-java">
+public class Counter {
+  private int count = 0;
+  public void increment(int value) {
+    this.count += value;
+  }
+}
+</pre>
+
+<p>In Javascript - which is a prototype-based language - the <code>this</code> keyword is not fixed to a particular value. Instead, the value of <code>this</code> is determined by <em>how the function is called</em> <span class="ref">[<a href="http://javascriptweblog.wordpress.com/2010/08/30/understanding-javascripts-this">1</a>]</span>:</p>
+<table>
+<tbody>
+<tr>
+<td>Execution Context</td>
+<td>Syntax of function call</td>
+<td>Value of this</td>
+</tr>
+<tr>
+<td>Global</td>
+<td>n/a</td>
+<td>global object (e.g. <code>window</code>)</td>
+</tr>
+<tr>
+<td>Function</td>
+<td>Method call:
+<code>myObject.foo();</code></td>
+<td><code>myObject</code></td>
+</tr>
+<tr>
+<td>Function</td>
+<td>Baseless function call:
+<code>foo();</code></td>
+<td>global object (e.g. <code>window</code>)
+(<code>undefined</code> in strict mode)</td>
+</tr>
+<tr>
+<td>Function</td>
+<td>Using call:
+<code>foo.call(context, myArg);</code></td>
+<td><code>context</code></td>
+</tr>
+<tr>
+<td>Function</td>
+<td>Using apply:
+<code>foo.apply(context, [myArgs]);</code></td>
+<td><code>context</code></td>
+</tr>
+<tr>
+<td>Function</td>
+<td>Constructor with new:
+<code>var newFoo = new Foo();</code></td>
+<td>the new instance
+(e.g. <code>newFoo</code>)
+
+</td></tr>
+<tr>
+<td>Evaluation</td>
+<td>n/a</td>
+<td>value of <code>this</code> in parent context</td>
+</tr>
+</tbody></table>
+
+<h4 id="calling-the-method-of-an-object">Calling the method of an object</h4>
+<p><p>This is the most basic example: we have defined an object, and call object.f1():</p>
+<pre class="run prettyprint">
+var obj = {
+  id: "An object",
+  f1: function() {
+    console.log(this);
+  }
+};
+obj.f1();
+</pre>
+
+<p>As you can see, <code>this</code> refers to the current object, as you might expect.</p>
+<h4 id="calling-a-standalone-function">Calling a standalone function</h4>
+<p>Since every function has a &quot;<code>this</code>&quot; value, you can access <code>this</code> even in functions that are not properties of an object:</p>
+<pre class="run prettyprint">
+function f1() {
+  console.log(this.toString());
+  console.log(this == window);
+}
+f1();
+</pre>
+
+<p>In this case, <code>this</code> refers to the global object, which is &quot;DomWindow&quot; in the browser and &quot;global&quot; in Node.</p>
+<h4 id="manipulating-this-via-function-apply-and-function-call">Manipulating this via Function.apply and Function.call</h4>
+<p>There are a number of built-in methods that all Functions have (see <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Function#Methods_2">the Mozilla Developer Docs for details</a>). Two of those built-in properties of functions allow us to change the value of &quot;<code>this</code>&quot; when calling a function:</p>
+<ol class="list">
+<li><a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Function/apply">Function.apply</a>(thisArg[, argsArray]): Calls the function, setting the value of <code>this</code> to thisArg and the arguments of the function the values of argsArray.</li>
+<li><a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Function/call">Function.call</a>(thisArg[, arg1[, arg2[, ...]]]): Calls the function, setting the value of <code>this</code> to thisArg, and passing the arguments arg1, arg2 ... to the function.</li>
+</ol>
+<p>Let&#39;s see some examples:</p>
+<pre class="run prettyprint">
+function f1() {
+  console.log(this);
+}
+var obj1 = { id: "Foo"};
+f1.call(obj1);
+var obj2 = { id: "Bar"};
+f1.apply(obj2);
+</pre>
+
+<p>As you can see, both call() and apply() allow us to specify what the value of <code>this</code> should be.</p>
+<p>The difference between the two is how they pass on addional arguments:</p>
+<pre class="run prettyprint">
+function f1(a, b) {
+  console.log(this, a, b);
+}
+var obj1 = { id: "Foo"};
+f1.call(obj1, 'A', 'B');
+var obj2 = { id: "Bar"};
+f1.apply(obj2, [ 'A', 'B' ]);
+</pre>
+
+<p>Call() takes the actual arguments of call(), while apply() takes just two arguments: thisArg and an array of arguments.</p>
+<p>Still with me? OK - now let&#39;s talk about the problems.</p>
+<h4 id="context-changes">Context changes</h4>
+<p>As I noted earlier, the value of <code>this</code> is not fixed - it is determined by <em>how the function is called</em>. In other words, the value of <code>this</code> is determined at the time the function is called, rather than being fixed to some particular value.</p>
+<p>This causes problems (pun intended) when we want to defer calling a function. For example, the following won&#39;t work:</p>
+<pre class="run prettyprint">
+var obj = {
+  id: "xyz",
+  printId: function() {
+    console.log('The id is '+ this.id + ' '+ this.toString());
+  }
+};
+setTimeout(obj.printId, 100);
+</pre>
+
+<p>Why doesn&#39;t this work? Well, for the same reason this does not work:</p>
+<pre class="run prettyprint">
+var obj = {
+  id: "xyz",
+  printId: function() {
+    console.log('The id is '+ this.id + ' '+ this.toString());
+  }
+};
+var callback = obj.printId;
+callback();
+</pre>
+
+<p>Since the value of <code>this</code> is determined at call time - and we are not calling the function using the &quot;object.method&quot; notation, &quot;<code>this</code>&quot; refers to the global object -- which is not what we want.</p>
+<p>In &quot;setTimeout(obj.printId, 100);&quot;, we are passing the value of obj.printId, which is a function. When that function later gets called, it is called as a standalone function - not as a method of an object.</p>
+<p>To get around this, we can create a function which maintains a reference to obj, which makes sure that <code>this</code> is bound correctly:</p>
+<pre class="run prettyprint">
+var obj = {
+  id: "xyz",
+  printId: function() {
+    console.log('The id is '+ this.id + ' '+ this.toString());
+  }
+};
+setTimeout(function() { obj.printId() }, 100);
+var callback = function() { obj.printId() };
+callback();
+</pre>
+
+<p>A pattern that you will see used frequently is to store the value of <code>this</code> at the beginning of a function to a variable called <code>self</code>, and then using <code>self</code> in callback in place of <code>this</code>:</p>
+<pre class="run prettyprint">
+var obj = {
+  items: ["a", "b", "c"],
+  process: function() {
+    var self = this; // assign this to self
+    this.items.forEach(function(item) {
+      // here, use the original value of this!
+      self.print(item);
+    });
+  },
+  print: function(item) {
+    console.log('*' + item + '*');
+  }
+};
+obj.process();
+</pre>
+
+<p>Because <code>self</code> is an ordinary variable, it will contain the value of <code>this</code> when the first function was called - no matter how or when the callback function passed to forEach() gets called. If we had used &quot;<code>this</code>&quot; instead of &quot;self&quot; in the callback function, it would have referred to the wrong object and the call to print() would have failed.</p>
+<h3 id="-chapter_number-2-gotcha-2-variable-scope-and-variable-evaluation-strategy">4.2 Gotcha #2: variable scope and variable evaluation strategy</h3>
+<p>C and C-like languages have rather simple variable scope rules. Whenever you see a new block, like { ... }, you know that all the variables defined within that block are local to that block.</p>
+<p>Javascript&#39;s scope rules differ from those of most other languages. Because of this, assigning to variables can have tricky side effects in Javascript. Look at the following snippets of code, and determine what they print out.</p>
+<p>Don&#39;t click &quot;run&quot; until you&#39;ve decided on what the output should be!</p>
+<h4 id="example-1-a-simple-for-loop">Example #1: A simple for loop</h4>
+<pre class="run prettyprint">
+for(var i = 0; i &lt; 5; i++) {
+  console.log(i);
+}
+</pre>
+
+<h4 id="example-2-a-settimeout-call-inside-a-for-loop">Example #2: a setTimeout call inside a for loop</h4>
+<pre class="run prettyprint">
+for(var i = 0; i &lt; 5; i++) {
+ setTimeout(function() {
+  console.log(i);
+ }, 100);
+}
+</pre>
+
+<h4 id="example-3-delayed-calls-a-function">Example #3: Delayed calls a function</h4>
+<pre class="run prettyprint">
+var data = [];
+for (var i = 0; i &lt; 5; i++) {
+ data[i] = function foo() {
+   console.log(i);
+ };
+}
+data[0](); data[1](); data[2](); data[3](); data[4]();
+</pre>
+
+<p>Example #1 should be pretty simple. It prints out “0, 1, 2, 3, 4”. However, example #2 prints out “5, 5, 5, 5, 5”. Why is this?</p>
+<p>Looking at examples #1 to #3, you can see a pattern emerge: delayed calls, whether they are via setTimeout() or a simple array of functions all print the unexpected result “5″.</p>
+<h3 id="variable-scope-rules-in-javascript">Variable scope rules in Javascript</h3>
+<p>Fundamentally, the only thing that matters is at what time the function code is executed. setTimeout() ensures that the function is only executed at some later stage. Similarly, assigning functions into an array explicitly like in example #3 means that the code within the function is only executed after the loop has been completed.</p>
+<p>There are three things you need to remember about variable scope in Javascript:</p>
+<ol class="list">
+<li><p>Variable scope is based on the nesting of functions. In other words, the position of the function in the source always determines what variables can be accessed:</p>
+<pre>1.  nested functions can access their parent’s variables:
+
+&lt;pre class=&quot;run prettyprint&quot;&gt;</pre>
+<p>var a = &quot;foo&quot;;
+function parent() {
+var b = &quot;bar&quot;;
+function nested() {
+console.log(a);
+console.log(b);
+}
+nested();
+}
+parent();
+</pre></p>
+<ol class="list">
+<li><p>non-nested functions can only access the topmost, global variables:</p>
+<pre class="run prettyprint">
+var a = "foo";
+function parent() {
+var b = "bar";
+}
+function nested() {
+console.log(a);
+console.log(b);
+}
+parent();
+nested();
+</pre>
+</li>
+</ol>
+</li>
+<li><p>Defining functions creates new scopes:</p>
+<pre>1.  and the default behavior is to access previous scope:
+
+&lt;pre class=&quot;run prettyprint&quot;&gt;</pre>
+<p>var a = &quot;foo&quot;;
+function grandparent() {
+var b = &quot;bar&quot;;
+function parent() {
+function nested() {
+  console.log(a);
+  console.log(b);
+}
+nested();
+}
+parent();
+}
+grandparent();
+</pre></p>
+<pre>2.  but inner function scopes can prevent access to a previous scope by defining a variable with the same name:
+
+&lt;pre class=&quot;run prettyprint&quot;&gt;</pre>
+<p>var a = &quot;foo&quot;;
+function grandparent() {
+var b = &quot;bar&quot;;
+function parent() {
+var b = &quot;b redefined!&quot;;
+function nested() {
+  console.log(a);
+  console.log(b);
+}
+nested();
+}
+parent();
+}
+grandparent();
+</pre></p>
+</li>
+<li>Some functions are executed later, rather than immediately. You can emulate this yourself by storing but not executing functions, see example #3.</li>
+</ol>
+<p>What we would expect, based on experience in other languages, is that in the for loop, calling a the function would result in a <a href="http://en.wikipedia.org/wiki/Evaluation_strategy#Call_by_reference">call-by-value</a> (since we are referencing a primitive – an integer) and that function calls would run using a copy of that value at the time when the part of the code was “passed over” (e.g. when the surrounding code was executed). That’s not what happens, because we are using a closure/nested anonymous function:</p>
+<p>A variable referenced in a nested function/closure is not a copy of the value of the variable — it is a live reference to the variable itself and can access it at a much later stage. So while the reference to i is valid in both examples 2 and 3 they refer to the value of i at the time of their execution – which is on the next event loop – which is after the loop has run – which is why they get the value 5.</p>
+<p>Functions can create new scopes but they do not have to. The default behavior allows us to refer back to the previous scope (all the way up to the global scope); this is why code executing at a later stage can still access i. Because no variable i exists in the current scope, the i from the parent scope is used; because the parent has already executed, the value of i is 5.</p>
+<p>Hence, we can fix the problem by explicitly establishing a new scope every time the loop is executed; then referring back to that new inner scope later.  The only way to do this is to use an (anonymous) function plus explicitly defining a variable in that scope.</p>
+<p>We can pass the value of i from the previous scope to the anonymous nested function, but then explicitly establish a new variable j in the new scope to hold that value for future execution of nested functions:</p>
+<h4 id="example-4-closure-with-new-scope-establishing-a-new-variable">Example #4: Closure with new scope establishing a new variable</h4>
+<pre class="run prettyprint">
+for(var i = 0; i &lt; 5; i++) {
+  (function() {
+    var j = i;
+    setTimeout( function() { console.log(j); }, 500*i);
+  })();
+}
+</pre>
+
+<p>Resulting in 0, 1, 2, 3, 4. Let&#39;s look at the expression &quot;(function() { ... }) ()&quot;:</p>
+<ul class="list">
+<li>( ... ) - The first set of round brackets are simply wrappers around an expression.<em>   ( function() { ... } ) -  Within that expression, we create a new anonymous function.</em>   ( function() { ... } ) () - Then we take the result of that expression, and call it as a function.</li>
+</ul>
+<p>We need to have that wrapping anonymous function, because only functions establish new scope. In fact, we are establishing five new scopes when the loop is run:</p>
+<ul class="list">
+<li>each iteration establishes it&#39;s own closure / anonymous function</li>
+<li>that closure / anonymous function is immediately executed</li>
+<li>the value of i is stored in j within the scope of that closure / anonymous function</li>
+<li>setTimeout() is called, which causes &quot;function() { console.log(j); }&quot; to run at a later point in time</li>
+<li>When the setTimeout is triggered, the variable j in console.log(j) refers to the j defined in closure / anonymous function</li>
+</ul>
+<p>In Javascript, all functions store “a hierarchical chain of all parent variable objects, which are above the current function context; the chain is saved to the function at its creation”. Because the scope chain is stored at creation, it is static and the relative nesting of functions precisely determines variable scope. When scope resolution occurs during code execution, the value for a particular identifier such as i is searched from:</p>
+<ol class="list">
+<li>first from the parameters given to the function (a.k.a. the activation object)</li>
+<li>and then from the statically stored chain of scopes (stored as the function’s internal property on creation) from top (e.g. parent) to bottom (e.g. global scope).</li>
+</ol>
+<p>Javascript will keep the full set of variables of each of the statically stored chains accessible even after their execution has completed, storing them in what is called a variable object. Since code that executes later will receive the value in the variable object at that later time, variables referring to the parent scope of nested code end up having “unexpected” results unless we create a new scope when the parent is run, copy the value from the parent to a variable in that new scope and refer to the variable in the new scope.</p>
+<p>For a much more detailed explanation, please read <a href="http://dmitrysoshnikov.com/ecmascript/javascript-the-core/">Dimitry Soshnikov’s detailed account of ECMA-262</a> which explains these things in full detail; in particular about <a href="http://dmitrysoshnikov.com/ecmascript/chapter-4-scope-chain/">Scope chains</a> and <a href="http://dmitrysoshnikov.com/ecmascript/chapter-8-evaluation-strategy/">Evaluation strategies</a>.</p>
+<p>When you are iterating through the contents of an array, you should use Array.forEach(), as it passes values as function arguments, avoiding this problem. However, in some cases you will still need to use the &quot;create an anonymous function&quot; technique to explicitly establish new scopes.</p>
+<h3 id="-chapter_number-3-other-minor-gotchas">4.3 Other minor gotchas</h3>
+<p>You should also be aware of the following gotchas:<p></p>
+<h4 id="object-properties-are-not-iterated-in-order-v8-">Object properties are not iterated in order (V8)</h4>
+<p><p>If you’ve done client-side scripting for Chrome, you might have run into the problems with iterating through the properties of objects. While other current Javascript engines enumerate object properties in insertion order, V8 orders properties with numeric keys in numeric order. For example:</p>
+<pre class="run prettyprint">
+var a = {"foo":"bar", "2":"2", "1":"1"};
+for(var i in a) {
+  console.log(i);
+};
+</pre>
+
+<p>Produces the following output: “1 2 foo” where as in Firefox and other browsers it produces: “foo 2 1”. This means that in V8, you have to use arrays if the order of items is important to you, since the order of properties in an object will not be dependent on the order you write (or insert) them in. This is <a href="http://code.google.com/p/v8/issues/detail?id=164">technically correct</a>, as ECMA-262 does not specify enumeration order for objects. To ensure that items remain in the order you want them to be in, use an array:</p>
+<pre class="run prettyprint">
+var a = [
+  { key: 'foo', val: 'bar'},
+  { key: '2', val: '2' },
+  { key: '1', val: '1' }
+  ];
+for(var i in a) {
+  console.log(a[i].key)
+};
+</pre>
+
+<p>Arrays items are always ordered consistently in all compliant implementations, including V8.</p>
+<h4 id="comparing-nan-with-anything-even-nan-is-always-false">Comparing NaN with anything (even NaN) is always false</h4>
+<p>You cannot use the equality operators (==, ===) to determine whether a value is NaN or not. Use the built-in, global isNaN() function:</p>
+<pre class="run prettyprint">
+console.log(NaN == NaN);
+console.log(NaN === NaN);
+console.log(isNaN(NaN));
+</pre>
+
+<p>The main use case for isNaN() is checking whether a conversion from string to int/float succeeded:</p>
+<pre class="run prettyprint">
+console.log("Input is 123 - ", !isNaN(parseInt("123", 10)));
+console.log("Input is abc - ", !isNaN(parseInt("abc", 10)));
+</pre>
+
+<h4 id="floating-point-precision">Floating point precision</h4>
+<p>Be aware that numbers in Javascript are floating point values, and as such, are not accurate in some cases, such as:</p>
+<pre class="run prettyprint">
+console.log(0.1 + 0.2);
+console.log(0.1 + 0.2 == 0.3);
+</pre>
+
+<p>Dealing with numbers with full precision requires specialized solutions.</p>
+
+<div id="bottom_navi">
+  <a href="ch3.html"> &lt; &lt; Previous Chapter</a> | <a href="ch5.html">Next Chapter &gt; &gt;</a>
+</div>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'mixu'; // required: replace example with your forum shortname
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+          </div>
+        </div>
+      </div>
+      <div id="sidebar">
+        <h3><a href="index.html">Home</a></h3>
+        <h3><a href="ch3.html">Previous Chapter</a></h3>
+        <h3><a href="ch5.html">Next Chapter</a></h3>
+        <br>
+        <p>
+          <a href="http://book.mixu.net/mixu-node-book.mobi" style="color: gray;"> .mobi (Kindle)</a>
+        </p>
+        <p>
+          <a href="http://book.mixu.net/mixu-node-book.epub" style="color: gray;">epub</a>
+        </p>
+        <p>
+          <a href="http://book.mixu.net/single.html" style="color: gray;">Single page HTML</a>
+        </p>
+        <p>
+          <a href="http://www.printfriendly.com/print/v2?url=http://book.mixu.net/single.html" style="color: gray;">PDF</a>
+        </p>
+        <br>
+        <h3>Other books</h3>
+        <ul class="spaced">
+          <li>
+            <a href="http://book.mixu.net/css/">Learn CSS Layout the pedantic way</a> (2015)
+          </li>
+          <li>
+            <a href="http://book.mixu.net/distsys/">Distributed systems: for fun and profit</a> (2013)
+          </li>
+          <li>
+            <a href="http://singlepageappbook.com/">Single page apps in depth</a> (2013)
+          </li>
+        </ul>
+      </div>
+    <div class="clear">
+    </div>
+
+    <div id="footer">
+      <p>A book about <a href="http://nodejs.org/">Node</a> by <a href="http://mixu.net/">Mikito Takada</a>.</p>
+    </div>
+    </div>
+  </div>
+
+
+  </div>
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-26716650-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+
+  </script>
+</body>
+</html>
