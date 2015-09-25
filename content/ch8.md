@@ -1,8 +1,14 @@
-# %chapter_number%. An overview of Node: Modules and npm
+home: index.html
+prev: ch7.html
+next: ch9.html
+---
+# 8. An overview of Node: Modules and npm
 
-<div class="summary">In this chapter, I:
-
-*   discuss modules and process-related globals in Node
+<div class="summary">
+In this chapter, I:
+  <ul>
+    <li>discuss modules and process-related globals in Node</li>
+  </ul>
 </div>
 
 Node.js has a good amount of functionality built in. Let's look at the [Table of Contents for the API documentation](http://nodejs.org/api/) and try to group it into manageable chunks (_italic_ = not covered here):
@@ -125,7 +131,7 @@ Coverage TODO.
 
 </table>
 
-## %chapter_number%.1 Node.js modules
+## 8.1 Node.js modules
 
 Let's talk about the module system in Node.
 
@@ -137,41 +143,42 @@ Using modules is simple: you use the `require()` function, which takes one argum
 
 To make a module yourself, you need to specify what objects you want to export. The exports object is available in the top level scope in Node for this purpose:
 
-<pre class="prettyprint">
+```js
 exports.funcname = function() {
   return ‘Hello World’;
 };
-</pre>
+```
 
 Any properties assigned to the exports object will be accessible from the return value of the require() function:
 
-<pre class="prettyprint">
-var hello = require(‘./hello.js’);
+```js
+var hello = require('./hello.js');
 console.log(hello.funcname()); // Print “Hello World”
-</pre>
+```
 
 You can also use module.exports instead of exports:
 
-<pre class="prettyprint">
-function funcname() { return ‘Hello World’; }
+```js
+function funcname() { return 'Hello World'; }
 module.exports = { funcname: funcname };
-</pre>
+```
 
 This alternative syntax makes it possible to assign a single object to exports (such as a class). We’ve previously discussed how you can build classes using prototypal inheritance. By making your classes separate modules, you can easily include them in your application:
 
-<pre class="prettyprint">// in class.js:
+```js
+// in class.js:
 var Class = function() { … }
 Class.prototype.funcname = function() {...}
 module.exports = Class;
-</pre>
+```
 
 Then you can include your file using require() and make a new instance of your class:
 
-<pre class="prettyprint">
+```js
 // in another file:
-var Class = require(‘./class.js’);
+var Class = require('./class.js');
 var object = new Class(); // create new instance
-</pre>
+```
 
 ### Sharing variables between modules
 
@@ -270,13 +277,13 @@ This would cause the file ./node_modules/mymodulename/lib/foo.js to be returned 
 
 Generally, you want to keep a single ./node_modules folder in the base directory of your app. You can install new modules by adding files or directories to ./node_modules. The best way to manage these modules is to use npm, which is covered briefly in the next section.
 
-## %chapter_number%.2 npm
+## 8.2 npm
 
 [npm](http://npmjs.org/) is the package manager used to distribute Node modules. I won't cover it in detail here, because [the Internet does that already](http://npmjs.org/doc/).
 
 npm is awesome, and you should use it. Below are a couple of use cases.
 
-### %chapter_number%.2.1 Installing packages
+### 8.2.1 Installing packages
 
 The most common use case for npm is to use it for installing modules from other people:
 
@@ -302,7 +309,7 @@ npm update packagename
 
 Packages are installed under ./node_modules/ in the current directory.
 
-### %chapter_number%.2.2 Specifying and installing dependencies for your own app
+### 8.2.2 Specifying and installing dependencies for your own app
 
 npm makes installing your application on a new machine easy, because you can specify what modules you want to have in your application by adding a package.json file in the root of your application.
 
@@ -330,7 +337,7 @@ This makes getting the right versions of the dependencies of your application a 
 npm install
 </pre>
 
-### %chapter_number%.2.3 Loading dependencies from a remote git repository
+### 8.2.3 Loading dependencies from a remote git repository
 
 One of my favorite features is the ability to use git+ssh URLs to fetch remote git repositories. By specifying a URL like git+ssh://github.com:mixu/nwm.git#master, you can install a dependency directly from a remote git repository. The part after the hash refers to a tag or branch on the repository.
 
@@ -340,7 +347,7 @@ To list the installed dependencies, use:
 npm ls
 </pre>
 
-### %chapter_number%.2.4 Specifying custom start, stop and test scripts
+### 8.2.4 Specifying custom start, stop and test scripts
 
 You can also use the "scripts" member of package.json to specify actions to be taken during various stages:
 

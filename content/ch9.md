@@ -1,4 +1,8 @@
-# %chapter_number%. Node fundamentals: Timers, EventEmitters, Streams and Buffers
+home: index.html
+prev: ch8.html
+next: ch10.html
+---
+# 9. Node fundamentals: Timers, EventEmitters, Streams and Buffers
 
 <div class="summary">
 
@@ -16,7 +20,7 @@ The building blocks of Node applications are:
 
 Note that I will not cover C/C++ addons, as this goes beyond the scope of the book.
 
-## %chapter_number%.1 Timers
+## 9.1 Timers
 
 The timers library consists of four global functions:
 
@@ -49,7 +53,7 @@ While you can set a timeout or interval using a string argument (e.g. `setTimeou
 
 Remember that timeouts and intervals are only executed when the execution is passed back to the Node event loop, so timings are not necessarily accurate if you have a long-running blocking task. So a long, CPU-intensive task which takes longer than the timeout/interval time will prevent those tasks from being run at their scheduled times.
 
-## %chapter_number%.2 EventEmitters
+## 9.2 EventEmitters
 
 event.EventEmitter is a class which is used to provide a consistent interface for emitting (triggering) and binding callbacks to events. It is used internally in many of the Node core libraries and provides a solid foundation to build event-based classes and applications.
 
@@ -128,7 +132,7 @@ EventEmitters extremely useful for abstracting event-based interactions, and if 
 
 One thing that you should be aware of is that EventEmitters are not “privileged” in any way - despite having “Event” in their name, they are executed just like any other code - emitting events does not trigger the event loop in any special way. Of course, you should use asynchronous functions for I/O in your callbacks, but EventEmitters are simply a standard way of implementing this kind of interface. You can verify this by [reading the source code for EventEmitters on Github](https://github.com/joyent/node/blob/master/lib/events.js).
 
-## %chapter_number%.3 Streams
+## 9.3 Streams
 
 We’ve discussed the three main alternatives when it comes to controlling execution: Sequential, Full Parallel and Parallel. Streams are an alternative way of accessing data from various sources such as the network (TCP/UDP), files, child processes and user input. In doing I/O, Node offers us multiple options for accessing the data:
 
@@ -277,7 +281,7 @@ process.stdin.pipe(fs.createWriteStream('./out.txt'));
 process.stdin.resume();
 </pre>
 
-## %chapter_number%.4 Buffers - working with binary data
+## 9.4 Buffers - working with binary data
 
 <p>Buffers in Node are a higher-performance alternative to strings. Since Buffers represent raw C memory allocation, they are more appropriate for dealing with binary data than strings. There are two reasons why buffers are useful:
 

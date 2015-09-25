@@ -1,11 +1,17 @@
-# %chapter_number%. Arrays, Objects, Functions and JSON
+home: index.html
+prev: ch4.html
+next: ch6.html
+---
+# 5. Arrays, Objects, Functions and JSON
 
-<div class="summary">In this chapter, I go through a number of useful ECMA5 functions for situations such as:
-
-*   Searching the content of an Array
-*   Checking whether the contents of an Array satisfy a criteria
-*   Iterating through the properties (keys) of an object
-*   Accepting variable number of arguments in functions
+<div class="summary">
+In this chapter, I go through a number of useful ECMA5 functions for situations such as:
+  <ul>
+    <li>Searching the content of an Array</li>
+    <li>Checking whether the contents of an Array satisfy a criteria</li>
+    <li>Iterating through the properties (keys) of an object</li>
+    <li>Accepting variable number of arguments in functions</li>
+  </ul>
 </div>
 
 This chapter focuses on Arrays, Objects and Functions. There are a number of useful ECMAScript 5 features which are supported by V8, such as Array.forEach(), Array.indexOf(), Object.keys() and String.trim().

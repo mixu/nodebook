@@ -1,9 +1,15 @@
+home: index.html
+prev: ch1.html
+next: ch3.html
+---
 # 2. What is Node.js?
 
-<div class="summary">In this chapter, I:
-
-*   describe the Node.js event loop and the premise behind asynchronous I/O
-*   go through an example of how context switches are made between V8 and Node
+<div class="summary">
+  In this chapter, I:
+  <ul>
+    <li>describe the Node.js event loop and the premise behind asynchronous I/O</li>
+    <li>go through an example of how context switches are made between V8 and Node</li>
+  </ul>
 </div>
 
 Node - or Node.js, as it is called to distinguish it from other "nodes" - is an event-driven I/O framework for the V8 JavaScript engine. Node.js allows Javascript to be executed on the server side, and it uses the wicked fast V8 Javascript engine which was developed by Google for the Chrome browser.
@@ -23,12 +29,12 @@ Let's skip the boring general buzzword bingo introduction and get to the meat of
 
 The event loop is a mechanism which allows you to specify what happens when a particular event occurs. This might be familiar to you from writing client-side Javascript, where a button might have an onClick event. When the button is clicked, the code associated with the onClick event is run. Node simply extends this idea to I/O operations: when you start an operation like reading a file, you can pass control to back to Node and have your code run when the data has been read. For example:
 
-<pre class="prettyprint">
+```js
 // read the file /etc/passwd, and call console.log on the returned data
 fs.readFile('/etc/passwd', function(err, data){
   console.log(data);
 });
-</pre>
+```
 
 You can think of the event loop as a simple list of tasks (code) bound to events. When an event happens, the code/task associated with that event is executed.
 
@@ -39,7 +45,7 @@ Remember that all of your code in Node is running in a single process. There is 
 
 What will happen?
 
-<pre class="prettyprint">
+```js
 // set function to be called after 1 second
 setTimeout(function() {
    console.log('Timeout ran at ' + new Date().toTimeString());
@@ -59,7 +65,7 @@ console.log('Exit loop at: '
             +new Date().toTimeString()
             +'. Ran '+i+' iterations.');
 
-</pre>
+```
 
 Because your code executes in a single process, the output looks like this:
 
@@ -77,7 +83,7 @@ However, the alternative - using threads and coordinating their execution - requ
 
 The premise of Node is that I/O is the main bottleneck of many (if not most) tasks. A single I/O operation can take millions of CPU cycles, and in traditional, non-event-loop-based frameworks the execution is blocked for that time. In Node, I/O operations such as reading a file are performed asynchronously. This is simply a fancy way of saying that you can pass control back to the event loop when you are performing I/O, like reading a file, and specify the code you want to run when the data is available using a callback function. For example:
 
-<pre class="prettyprint">
+```js
 setTimeout(function() {
    console.log('setTimeout at '+new Date().toTimeString());
 }, 1000);
@@ -85,7 +91,7 @@ setTimeout(function() {
 require('fs').readFile('/etc/passwd', function(err, result) {
   console.log(result);
 } );
-</pre>
+```
 
 Here, we are reading a file using an asynchronous function, fs.readFile(), which takes as arguments the name of the file and a callback function. When Node executes this code, it starts the I/O operation in the background. Once the execution has passed over fs.readFile(), control is returned back to Node, and the event loop gets to run.
 
@@ -105,7 +111,7 @@ Other than I/O calls, Node.js expects that all requests return quickly; e.g. CPU
 
 Let’s look at a very simple Node.js HTTP server (server.js):
 
-<pre class="prettyprint">
+```js
 var http = require('http');
 var content = '&lt;html&gt;&lt;body&gt;&lt;p&gt;Hello World&lt;/p&gt;&lt;script type=”text/javascript”'
     +'>alert(“Hi!”);&lt;/script&gt;&lt;/body&gt;&lt;/html&gt;';
@@ -113,11 +119,13 @@ http.createServer(function (request, response) {
    response.end(content);
 }).listen(8080, 'localhost');
 console.log('Server running at http://localhost:8080/.');
-</pre>
+```
 
 You can run this code using the following command:
 
-<pre class="prettyprint">node server.js</pre>
+```
+node server.js
+```
 
 In the simple server, we first require the http library (a Node core library). Then we instruct that server to listen on port 8080 on your computer (localhost). Finally, we write a console message using console.log().
 

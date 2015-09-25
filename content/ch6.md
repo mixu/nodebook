@@ -1,9 +1,16 @@
-# %chapter_number%. Objects and classes by example
+home: index.html
+prev: ch5.html
+next: ch7.html
+---
+# 6. Objects and classes by example
 
-<div class="summary">In this chapter, I:
+<div class="summary">
+In this chapter, I:
 
-*   cover OOP in Javascript by example
-*   point out a few caveats and recommended solutions
+<ul>
+  <li>cover OOP in Javascript by example</li>
+  <li>point out a few caveats and recommended solutions</li>
+</ul>
 </div>
 
 I'm not covering the theory behind this, but I recommend that you start by learning more about the prototype chain, because understanding the prototype chain is essential to working effectively with JS.
@@ -42,7 +49,7 @@ Let's look at some applied patterns next:
 
 ### Class pattern
 
-<pre class="prettyprint">
+```js
 // Constructor
 function Foo(bar) {
   // always initialize all instance properties
@@ -55,30 +62,30 @@ Foo.prototype.fooBar = function() {
 };
 // export the class
 module.exports = Foo;
-</pre>
+```
 
 Instantiating a class is simple:
 
-<pre class="prettyprint">
+```js
 // constructor call
 var object = new Foo('Hello');
-</pre>
+```
 
 Note that I recommend using `function Foo() { ... }` for constructors instead of `var Foo = function() { ... }`.
 
-<p>The main benefit is that you get better stack traces from Node when you use a named function. Generating a stack trace from an object with an unnamed constructor function:
+The main benefit is that you get better stack traces from Node when you use a named function. Generating a stack trace from an object with an unnamed constructor function:
 
-<pre class="prettyprint">
+```js
 var Foo = function() { };
 Foo.prototype.bar = function() { console.trace(); };
 
 var f = new Foo();
 f.bar();
-</pre>
+```
 
 ... produces something like this:
 
-<pre>
+```
 Trace:
     at [object Object].bar (/home/m/mnt/book/code/06_oop/constructors.js:3:11)
     at Object.<anonymous> (/home/m/mnt/book/code/06_oop/constructors.js:7:3)
@@ -88,21 +95,21 @@ Trace:
     at Function._load (module.js:310:12)
     at Array.0 (module.js:470:10)
     at EventEmitter._tickCallback (node.js:192:40)
-</pre>
+```
 
 ... while using a named function</li>
 
-<pre class="prettyprint">
+```js
 function Baz() { };
 Baz.prototype.bar = function() { console.trace(); };
 
 var b = new Baz();
 b.bar();
-</pre>
+```
 
-<p>... produces a stack trace with the name of the class:
+... produces a stack trace with the name of the class:
 
-<pre>
+```
 Trace:
     at Baz.bar (/home/m/mnt/book/code/06_oop/constructors.js:11:11)
     at Object.<anonymous> (/home/m/mnt/book/code/06_oop/constructors.js:15:3)
@@ -112,11 +119,11 @@ Trace:
     at Function._load (module.js:310:12)
     at Array.0 (module.js:470:10)
     at EventEmitter._tickCallback (node.js:192:40)
-</pre>
+```
 
 To add private shared (among all instances of the class) variables, add them to the top level of the module:
 
-<pre class="prettyprint">
+```js
 // Private variable
 var total = 0;
 
@@ -129,7 +136,7 @@ function Foo() {
 Foo.prototype.getTotalObjects = function(){
   return total;
 };
-</pre>
+```
 
 ### Avoid assigning variables to prototypes
 
@@ -178,7 +185,7 @@ foo2.showData(); // "foo2", [1, 2, 3]
 
 For example, construction pattern which returns an object is terrible ([even though](http://bolinfest.com/javascript/inheritance.php) it was introduced in "JavaScript: The Good Parts"):
 
-<pre class="prettyprint">
+```js
 function Phone(phoneNumber) {
   var that = {};
   // You are constructing a custom object on every call!
@@ -194,10 +201,10 @@ function Phone() {
     getPhoneNumber: function() { ... }
   };
 };
-</pre>
+```
 
 Here, every time we run Phone(), a new object is created with a new property.
-  The V8 runtime cannot optimize this case, since there is no indication that instances of Phone are a class; they look like custom objects to the engine since prototypes are not used. This leads to slower performance.
+The V8 runtime cannot optimize this case, since there is no indication that instances of Phone are a class; they look like custom objects to the engine since prototypes are not used. This leads to slower performance.
 
 It's also broken in another way: you cannot change the prototype properties of all instances of Phone, since they do not have a common ancestor/prototype object. Prototypes exists for a reason, so use the class pattern described earlier.
 
@@ -249,7 +256,7 @@ This is not the same thing as classical inheritance - but it is standard, unders
 
 Or use [util.inherits()](http://nodejs.org/api/util.html#util.inherits) (from the Node.js core). Here is the full implementation:
 
-<pre class="prettyprint">
+```js
 var inherits = function (ctor, superCtor) {
     ctor.super_ = superCtor;
     ctor.prototype = Object.create(superCtor.prototype, {
@@ -259,15 +266,15 @@ var inherits = function (ctor, superCtor) {
         }
     });
 };
-</pre>
+```
 
 And a usage example:
 
-<pre class="prettyprint">
+```js
 var util = require('util');
 function Foo() { }
 util.inherits(Foo, EventEmitter);
-</pre>
+```
 
 The only real benefit to util.inherits is that you don't need to use the actual ancestor name in the Child constructor.
 
@@ -281,7 +288,7 @@ Otherwise, you might accidentally define/access a variable property defined in a
 
 A mixin is a function that adds new functions to the prototype of an object. I prefer to expose an explicit mixin() function to indicate that the class is designed to be mixed into another one:
 
-<pre class="prettyprint">
+```js
 function Foo() { }
 Foo.prototype.bar = function() { };
 Foo.prototype.baz = function() { };
@@ -294,24 +301,24 @@ Foo.mixin = function(destObject){
 };
 
 module.exports = Foo;
-</pre>
+```
 
 Extending the Bar prototype with Foo:
 
-<pre class="prettyprint">
+```js
 var Foo = require('./foo.js');
 function Bar() {}
 Bar.prototype.qwerty = function() {};
 
 // mixin Foo
 Foo.mixin(Bar);
-</pre>
+```
 
 ### Avoid currying
 
 Currying is a shorthand notation for creating an anonymous function with a new scope that calls another function. In other words, anything you can do using currying can be done using a simple anonymous function and a few variables local to that function.
 
-<pre class="prettyprint">
+```js
 Function.prototype.curry = function() {
   var fn = this;
   var args = Array.prototype.slice.call(arguments);
@@ -319,7 +326,7 @@ Function.prototype.curry = function() {
     return fn.apply(this, args.concat(Array.prototype.slice.call(arguments, 0)));
   };
 }
-</pre>
+```
 
 Currying is intriguing, but I haven't seen a practical use case for it outside of subverting how the `this` argument works in Javascript.
 
@@ -327,20 +334,20 @@ Don't use currying to change the context of a call/the`this` argument. Use the "
 
 Instead of using currying:
 
-<pre class="prettyprint">
+```js
 function foo(a, b, c) { console.log(a, b, c); }
 
 var bar = foo.curry('Hello');
 bar('World', '!');
-</pre>
+```
 
 I think that writing:
 
-<pre class="prettyprint">
+```js
 function foo(a, b, c) { console.log(a, b, c); }
 
 function bar(b, c) { foo('Hello', b, c); }
 bar('World', '!');
-</pre>
+```
 
 is more clear.

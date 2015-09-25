@@ -6,12 +6,13 @@
     "name": "Mikito Takada",
     "email": "mixu@mixu.net",
     "url": "http://blog.mixu.net/"
-    },
+  },
   "main": "generate.js",
   "dependencies": {
+    "handlebars": "latest",
+    "markdown-stream-utils": "~1.1.0",
     "marked": "~0.2.5",
-    "handlebars": "latest"
+    "pipe-iterators": "~1.1.0"
   },
   "private": "true"
 }
-

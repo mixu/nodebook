@@ -3,59 +3,47 @@
   <head>
     <title>2. What is Node.js? - Mixu&#x27;s Node book</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<style type="text/css">
-@font-face {
-  font-family: 'Droid Sans';
-  font-style: normal;
-  font-weight: normal;
-  src: local('Droid Sans'), local('DroidSans'), url('DroidSans.woff') format('woff');
-}
-</style>
-<link href='http://fonts.googleapis.com/css?family=Andika|Cantarell:400,700,400italic' rel='stylesheet' type='text/css'>
-<link href='http://fonts.googleapis.com/css?family=Droid+Sans+Mono' rel='stylesheet' type='text/css'>
-<script src="assets/jquery-1.6.1.min.js"></script>
-<link type="text/css" rel="stylesheet" href="assets/style.css"/>
-<style type="text/css">
-#bottom_navi {
-  font-size: larger;
-  margin: 8px;
-}
-</style>
-<link type="text/css" rel="stylesheet" href="assets/assert.css"/>
-<link type="text/css" rel="stylesheet" href="assets/prettify.css"/>
-<script type="text/javascript" src="assets/prettify.js"></script>
-<!-- Script runner -->
-<script type="text/javascript" src="assets/runner.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <script src="assets/jquery-1.6.1.min.js"></script>
+    <link type="text/css" rel="stylesheet" href="assets/style.css"/>
+    <link type="text/css" rel="stylesheet" href="assets/assert.css"/>
+    <link type="text/css" rel="stylesheet" href="assets/pilcrow.css"/>
+    <link type="text/css" rel="stylesheet" href="assets/hljs-github.min.css"/>
+    <link type="text/css" rel="stylesheet" href="assets/prettify.css"/>
+    <script type="text/javascript" src="assets/prettify.js"></script>
+    <!-- Script runner -->
+    <script type="text/javascript" src="assets/runner.js"></script>
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-26716650-3', 'auto');
+      ga('send', 'pageview');
+
+    </script>
   </head>
 <body>
   <div id="wrapper">
     <div id="header">
-      <div id="brand">
-        <h1>Mixu's Node book</h1>
-        <span>A book about using Node.js</span>
-      </div>
-      <div id="navi">
-        <form class="search" action="http://www.google.com/search">
-          <input type="hidden" name="as_sitesearch" value="book.mixu.net">
-          <input type="text" name="as_q" value="" class="search_field">
-          <input type="submit" value="Search" class="search_btn">
-        </form>
-      </div>
+    <h1>Mixu's Node book</h1>
+    <h2>A book about using Node.js</h2>
     </div>
-
     <div class="clear">
       <hr>
     </div>
-     <!-- Main -->
 
     <div id="main">
       <div id="container">
-        <div id="content" class="post">
-<h1 id="2-what-is-node-js-">2. What is Node.js?</h1>
-<div class="summary">In this chapter, I:
-
-<em>   describe the Node.js event loop and the premise behind asynchronous I/O
-</em>   go through an example of how context switches are made between V8 and Node
+        <div id="content" class="post"><h1 id="2-what-is-node-js-"><a class="header-link" href="#2-what-is-node-js-"></a>2. What is Node.js?</h1>
+<div class="summary">
+  In this chapter, I:
+  <ul class="list">
+    <li>describe the Node.js event loop and the premise behind asynchronous I/O</li>
+    <li>go through an example of how context switches are made between V8 and Node</li>
+  </ul>
 </div>
 
 <p>Node - or Node.js, as it is called to distinguish it from other &quot;nodes&quot; - is an event-driven I/O framework for the V8 JavaScript engine. Node.js allows Javascript to be executed on the server side, and it uses the wicked fast V8 Javascript engine which was developed by Google for the Chrome browser.</p>
@@ -68,45 +56,36 @@
 </ul>
 <p>Node.js is different from client-side Javascript in that it removes certain things, like DOM manipulation, and adds support for evented I/O, processes, streams, HTTP, SSL, DNS, string and buffer processing and C/C++ addons.</p>
 <p>Let&#39;s skip the boring general buzzword bingo introduction and get to the meat of the matter - how does node run your code?</p>
-<h2 id="the-event-loop-understanding-how-node-executes-javascript-code">The Event Loop - understanding how Node executes Javascript code</h2>
+<h2 id="the-event-loop-understanding-how-node-executes-javascript-code"><a class="header-link" href="#the-event-loop-understanding-how-node-executes-javascript-code"></a>The Event Loop - understanding how Node executes Javascript code</h2>
 <p>The event loop is a mechanism which allows you to specify what happens when a particular event occurs. This might be familiar to you from writing client-side Javascript, where a button might have an onClick event. When the button is clicked, the code associated with the onClick event is run. Node simply extends this idea to I/O operations: when you start an operation like reading a file, you can pass control to back to Node and have your code run when the data has been read. For example:</p>
-<pre class="prettyprint">
-// read the file /etc/passwd, and call console.log on the returned data
-fs.readFile('/etc/passwd', function(err, data){
-  console.log(data);
-});
-</pre>
-
-<p>You can think of the event loop as a simple list of tasks (code) bound to events. When an event happens, the code/task associated with that event is executed.</p>
+<pre class="hljs"><code><span class="hljs-comment">// read the file /etc/passwd, and call console.log on the returned data</span>
+fs.readFile(<span class="hljs-string">'/etc/passwd'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, data)</span></span>{
+  <span class="hljs-built_in">console</span>.log(data);
+});</code></pre><p>You can think of the event loop as a simple list of tasks (code) bound to events. When an event happens, the code/task associated with that event is executed.</p>
 <p>Remember that all of your code in Node is running in a single process. There is no parallel execution of Javascript code that you write - you can only be running a single piece of code at any time. Consider the following code, in which:</p>
 <ol class="list">
 <li>We set a function to be called after 1000 milliseconds using setTimeout() and then</li>
 <li>start a loop that blocks for 4 seconds.</li>
 </ol>
 <p>What will happen?</p>
-<pre class="prettyprint">
-// set function to be called after 1 second
-setTimeout(function() {
-   console.log('Timeout ran at ' + new Date().toTimeString());
-}, 1000);
+<pre class="hljs"><code><span class="hljs-comment">// set function to be called after 1 second</span>
+setTimeout(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{
+   <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'Timeout ran at '</span> + <span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>().toTimeString());
+}, <span class="hljs-number">1000</span>);
 
-// store the start time
-var start = new Date();
-console.log('Enter loop at: '+start.toTimeString());
+<span class="hljs-comment">// store the start time</span>
+<span class="hljs-keyword">var</span> start = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>();
+<span class="hljs-built_in">console</span>.log(<span class="hljs-string">'Enter loop at: '</span>+start.toTimeString());
 
-// run a loop for 4 seconds
-var i = 0;
-// increment i while (current time &lt; start time + 4000 ms)
-while(new Date().getTime() &lt; start.getTime() + 4000) {
+<span class="hljs-comment">// run a loop for 4 seconds</span>
+<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>;
+<span class="hljs-comment">// increment i while (current time &amp;lt; start time + 4000 ms)</span>
+<span class="hljs-keyword">while</span>(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>().getTime() &amp;lt; start.getTime() + <span class="hljs-number">4000</span>) {
    i++;
 }
-console.log('Exit loop at: '
-            +new Date().toTimeString()
-            +'. Ran '+i+' iterations.');
-
-</pre>
-
-<p>Because your code executes in a single process, the output looks like this:</p>
+<span class="hljs-built_in">console</span>.log(<span class="hljs-string">'Exit loop at: '</span>
+            +<span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>().toTimeString()
+            +<span class="hljs-string">'. Ran '</span>+i+<span class="hljs-string">' iterations.'</span>);</code></pre><p>Because your code executes in a single process, the output looks like this:</p>
 <pre>
 Enter loop at: 20:04:50 GMT+0300 (EEST)
 Exit loop at: 20:04:54 GMT+0300 (EEST). Ran 3622837 iterations.
@@ -117,39 +96,29 @@ Timeout ran at 20:04:54 GMT+0300 (EEST)
 <p>Some people have criticized Node&#39;s single process model because it is possible to block the current thread of execution like shown above.</p>
 <p>However, the alternative - using threads and coordinating their execution - requires somewhat intricate coding to work and is only useful if CPU cycles are the main bottleneck. In my view, Node is about taking a simple idea (single-process event loops), and seeing how far one can go with it.  Even with a single process model, you can move CPU-intensive work to other background processes, for example by setting up a queue which is processed by a pool of workers, or by load balancing over multiple processes. If you are performing CPU-bound work, then the only real solutions are to either figure out a better algorithm (to use less CPU) or to scale to multiple cores and multiple machines (to get more CPU&#39;s working on the problem).</p>
 <p>The premise of Node is that I/O is the main bottleneck of many (if not most) tasks. A single I/O operation can take millions of CPU cycles, and in traditional, non-event-loop-based frameworks the execution is blocked for that time. In Node, I/O operations such as reading a file are performed asynchronously. This is simply a fancy way of saying that you can pass control back to the event loop when you are performing I/O, like reading a file, and specify the code you want to run when the data is available using a callback function. For example:</p>
-<pre class="prettyprint">
-setTimeout(function() {
-   console.log('setTimeout at '+new Date().toTimeString());
-}, 1000);
+<pre class="hljs"><code>setTimeout(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{
+   <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'setTimeout at '</span>+<span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>().toTimeString());
+}, <span class="hljs-number">1000</span>);
 
-require('fs').readFile('/etc/passwd', function(err, result) {
-  console.log(result);
-} );
-</pre>
-
-<p>Here, we are reading a file using an asynchronous function, fs.readFile(), which takes as arguments the name of the file and a callback function. When Node executes this code, it starts the I/O operation in the background. Once the execution has passed over fs.readFile(), control is returned back to Node, and the event loop gets to run.</p>
+<span class="hljs-built_in">require</span>(<span class="hljs-string">'fs'</span>).readFile(<span class="hljs-string">'/etc/passwd'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, result)</span> </span>{
+  <span class="hljs-built_in">console</span>.log(result);
+} );</code></pre><p>Here, we are reading a file using an asynchronous function, fs.readFile(), which takes as arguments the name of the file and a callback function. When Node executes this code, it starts the I/O operation in the background. Once the execution has passed over fs.readFile(), control is returned back to Node, and the event loop gets to run.</p>
 <p>When the I/O operation is complete, the callback function is executed, passing the data from the file as the second argument. If reading the file takes longer than 1 second, then the function we set using setTimeout will be run after 1 second - before the file reading is completed.</p>
 <p>In node.js, you aren’t supposed to worry about what happens in the backend: just use callbacks when you are doing I/O; and you are guaranteed that your code is never interrupted and that doing I/O will not block other requests.</p>
 <p>Having asynchronous I/O is good, because I/O is more expensive than most code and we should be doing something better than just waiting for I/O. The event loop is simply a way of coordinating what code should be run during I/O, which executes whenever your code finishes executing. More formally, an event loop is “an entity that handles and processes external events and converts them into callback invocations”.</p>
 <p>By making calls to the asynchronous functions in Node’s core libraries, you specify what code should be run once the I/O operation is complete. You can think of  I/O calls as the points at which Node.js can switch from executing one request to another. At an I/O call, your code saves the callback and returns control to the Node runtime environment. The callback will be called later when the data actually is available.</p>
 <p>Of course, on the backend - invisible to you as a Node developer -  may be thread polls and separate processes doing work. However, these are not explicitly exposed to your code, so you can’t worry about them other than by knowing that I/O interactions e.g. with the database, or with other processes will be asynchronous from the perspective of each request since the results from those threads are returned via the event loop to your code. Compared to the non-evented multithreaded approach (which is used by servers like Apache and most common scripting languages), there are a lot fewer threads and thread overhead, since threads aren’t needed for each connection; just when you absolutely positively must have something else running in parallel and even then the management is handled by Node.js.</p>
 <p>Other than I/O calls, Node.js expects that all requests return quickly; e.g. CPU-intensive work should be split off to another process with which you can interact as with events, or by using an abstraction such as WebWorkers (which will be supported in the future). This (obviously) means that you can’t parallelize your code without another process in the background with which you interact with asynchronously. Node provides the tools to do this, but more importantly makes working in an evented, asynchronous manner easy.</p>
-<h3 id="example-a-look-at-the-event-loop-in-a-node-js-http-server">Example: A look at the event loop in a Node.js HTTP server</h3>
+<h3 id="example-a-look-at-the-event-loop-in-a-node-js-http-server"><a class="header-link" href="#example-a-look-at-the-event-loop-in-a-node-js-http-server"></a>Example: A look at the event loop in a Node.js HTTP server</h3>
 <p>Let’s look at a very simple Node.js HTTP server (server.js):</p>
-<pre class="prettyprint">
-var http = require('http');
-var content = '&lt;html&gt;&lt;body&gt;&lt;p&gt;Hello World&lt;/p&gt;&lt;script type=”text/javascript”'
-    +'>alert(“Hi!”);&lt;/script&gt;&lt;/body&gt;&lt;/html&gt;';
-http.createServer(function (request, response) {
+<pre class="hljs"><code><span class="hljs-keyword">var</span> http = <span class="hljs-built_in">require</span>(<span class="hljs-string">'http'</span>);
+<span class="hljs-keyword">var</span> content = <span class="hljs-string">'&amp;lt;html&amp;gt;&amp;lt;body&amp;gt;&amp;lt;p&amp;gt;Hello World&amp;lt;/p&amp;gt;&amp;lt;script type=”text/javascript”'</span>
+    +<span class="hljs-string">'&gt;alert(“Hi!”);&amp;lt;/script&amp;gt;&amp;lt;/body&amp;gt;&amp;lt;/html&amp;gt;'</span>;
+http.createServer(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(request, response)</span> </span>{
    response.end(content);
-}).listen(8080, 'localhost');
-console.log('Server running at http://localhost:8080/.');
-</pre>
-
-<p>You can run this code using the following command:</p>
-<pre class="prettyprint">node server.js</pre>
-
-<p>In the simple server, we first require the http library (a Node core library). Then we instruct that server to listen on port 8080 on your computer (localhost). Finally, we write a console message using console.log().</p>
+}).listen(<span class="hljs-number">8080</span>, <span class="hljs-string">'localhost'</span>);
+<span class="hljs-built_in">console</span>.log(<span class="hljs-string">'Server running at http://localhost:8080/.'</span>);</code></pre><p>You can run this code using the following command:</p>
+<pre class="hljs"><code>node <span class="hljs-keyword">server</span>.js</code></pre><p>In the simple server, we first require the http library (a Node core library). Then we instruct that server to listen on port 8080 on your computer (localhost). Finally, we write a console message using console.log().</p>
 <p>When the code is run, the Node runtime starts up, loads the V8 Javascript engine which runs the script. The call to http.createServer creates a server, and the listen() call instructs the server to listen on port 8080. The program at the console.log() statement has the following state:</p>
 <pre>
 [V8 engine running server.js]
@@ -177,48 +146,20 @@ console.log('Server running at http://localhost:8080/.');
 <p>The client (your web browser) will receive the data and interpret it as HTML. The alert() call in the Javascript tag in the returned data will be run in your web browser, and the HTML containing “Hello World” will be displayed. It is important to realize that just because both the server and the client are running Javascript, there is no “special” connection - each has it’s own Javascript variables, functions and context. The data returned from the client request callback is just data and there is no automatic sharing or built-in ability to call functions on the server without issuing a server request.</p>
 <p>However, because both the server and the client are written in Javascript, you can share code. And even better, since the server is a persistent program, you can build programs that have long-term state - unlike in scripting languages like PHP, where the script is run once and then exits, Node has it’s own internal HTTP server which is capable of saving the state of the program and resuming it quickly when a new request is made.</p>
 
-<div id="bottom_navi">
-  <a href="ch1.html"> &lt; &lt; Previous Chapter</a> | <a href="ch3.html">Next Chapter &gt; &gt;</a>
-</div>
-
-<div id="disqus_thread"></div>
-<script type="text/javascript">
-    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
-    var disqus_shortname = 'mixu'; // required: replace example with your forum shortname
-    /* * * DON'T EDIT BELOW THIS LINE * * */
-    (function() {
-        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
-        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-    })();
-</script>
-<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-<a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
-
-
-
-          </div>
+         <div id="bottom_navi">
+              <a href="ch1.html"> &lt; &lt; Previous Chapter</a> |
+              <a href="ch3.html">Next Chapter &gt; &gt;</a>
+         </div>
         </div>
       </div>
-      <div id="sidebar">
-        <h3><a href="index.html">Home</a></h3>
+    </div>
+    <div id="sidebar">
+      <h3><a href="index.html">Home</a></h3>
+      <h3><a href="single.html">Single page HTML</a></h3>
         <h3><a href="ch1.html">Previous Chapter</a></h3>
         <h3><a href="ch3.html">Next Chapter</a></h3>
-        <br>
-        <p>
-          <a href="http://book.mixu.net/mixu-node-book.mobi" style="color: gray;"> .mobi (Kindle)</a>
-        </p>
-        <p>
-          <a href="http://book.mixu.net/mixu-node-book.epub" style="color: gray;">epub</a>
-        </p>
-        <p>
-          <a href="http://book.mixu.net/single.html" style="color: gray;">Single page HTML</a>
-        </p>
-        <p>
-          <a href="http://www.printfriendly.com/print/v2?url=http://book.mixu.net/single.html" style="color: gray;">PDF</a>
-        </p>
-        <br>
-        <h3>Other books</h3>
+
+      <h3>Other books</h3>
         <ul class="spaced">
           <li>
             <a href="http://book.mixu.net/css/">Learn CSS Layout the pedantic way</a> (2015)
@@ -230,29 +171,31 @@ console.log('Server running at http://localhost:8080/.');
             <a href="http://singlepageappbook.com/">Single page apps in depth</a> (2013)
           </li>
         </ul>
-      </div>
+    </div>
     <div class="clear">
     </div>
 
+    <div id="disqus_thread"></div>
+
+    <div class="clear">
+    </div>
     <div id="footer">
-      <p>A book about <a href="http://nodejs.org/">Node</a> by <a href="http://mixu.net/">Mikito Takada</a>.</p>
+      <p>Written by <a href="http://mixu.net/">Mikito Takada</a>.</p>
     </div>
-    </div>
+
+    <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+        var disqus_shortname = 'mixu'; // required: replace example with your forum shortname
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+
   </div>
-
-
-  </div>
-  <script type="text/javascript">
-    var _gaq = _gaq || [];
-    _gaq.push(['_setAccount', 'UA-26716650-1']);
-    _gaq.push(['_trackPageview']);
-
-    (function() {
-      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-    })();
-
-  </script>
 </body>
 </html>

@@ -1,13 +1,24 @@
-# %chapter_number%. Control flow
+home: index.html
+prev: ch6.html
+next: ch8.html
+---
+# 7. Control flow
 
-<div class="summary">In this chapter, I:
-*   discuss nested callbacks and control flow in Node
-*   introduce three essential async control flow patterns:
-        *   Series - for running async tasks one at a time
-    *   Fully parallel - for running async tasks all at the same time
-    *   Limitedly parallel - for running a limited number of async tasks at the same time
-*   walk you through a simple implementation of these control flow patterns
-*   and convert the simple implementation into a control flow library that takes callback arguments
+<div class="summary">
+In this chapter, I:
+
+  <ul>
+    <li>discuss nested callbacks and control flow in Node</li>
+    <li>introduce three essential async control flow patterns:
+      <ul>
+        <li>Series - for running async tasks one at a time</li>
+        <li>Fully parallel - for running async tasks all at the same time</li>
+        <li>Limitedly parallel - for running a limited number of async tasks at the same time</li>
+      </ul>
+    </li>
+    <li>walk you through a simple implementation of these control flow patterns</li>
+    <li>and convert the simple implementation into a control flow library that takes callback arguments</li>
+  </ul>
 </div>
 
 When you start coding with Node.js, it’s a bit like learning programming the first time. Since you want everything to be asynchronous, you use a lot of callbacks without really thinking about how you should structure your code. It’s a bit like being overexcited about the if statement, and using it and only it to write complex programs. One of my first programs in primary school was a text-based adventure where you would be presented with a scenario and a choice. I wrote code until I reached the maximum level of nesting supported by the compiler, which probably was 63 nested if statements.
@@ -16,7 +27,7 @@ Learning how to code with callbacks is similar in many ways. If that is the only
 
 Enlightenment comes when you realize that this:
 
-<pre class="prettyprint">
+```js
 async1(function(input, result1) {
   async2(function(result2) {
     async3(function(result3) {
@@ -28,15 +39,15 @@ async1(function(input, result1) {
     });
   });
 })
-</pre>
+```
 
 ought be written as:
 
-<pre class="prettyprint">
+```js
 myLibrary.doStuff(input, function(output){
   // do something with output
 });
-</pre>
+```
 
 In other words, you can and are supposed to think in terms of higher level abstractions. Refactor, and extract functionality into it’s own module. There can be any number of callbacks between the input that matters and the output that matters, just make sure that you split the functionality into meaningful modules rather than dumping it all into one long chain.
 
@@ -48,7 +59,7 @@ Unlike in tradional scripting languages based on blocking I/O, managing the cont
 
 Let's look at the most common control flow patterns, and see how we can take something as abstract as control flow and turn it into a small, single purpose module to take advantage of callbacks-as-input.
 
-## %chapter_number%.2 Control flow: Specifying execution order
+## 7.2 Control flow: Specifying execution order
 
 If you’ve started reading some of the tutorials online, you’ll find a bewildering number of different control-flow libraries for Node. I find it quite confusing that each of these has it’s own API and terminology - talking about promises, steps, vows, futures and so on. Rather than endorse any particular control flow solution, let’s drill down to the basics, look at some fundamental patterns and try to come up with a simple and undramatic set of terms to describe the different options we have for control flow in Node.
 
@@ -59,21 +70,26 @@ As you already know, there are two types of API functions in Node.js:
 
 Synchronous functions return a result:
 
-<pre class="prettyprint">var data = fs.readFileSync('/etc/passwd');</pre>
+```js
+var data = fs.readFileSync('/etc/passwd');
+```
 
 While asynchronous functions receive the result via a callback (after passing control to the event loop):
 
-<pre class="prettyprint">fs.readFileSync('/etc/passwd', function(err, data) { … } );</pre>
+```js
+fs.readFileSync('/etc/passwd', function(err, data) { … } );
+```
 
 Writing synchronous code is not problematic: we can draw on our experience in other languages to structure it appropriately using keywords like if, else, for, while and switch. It’s the way we should structure asynchronous calls which is most problematic, because established practices do not help here. For example, we’d like to read a thousand text files. Take the following naive code:
 
-<pre class="prettyprint">for(var i = 1; i &lt;= 1000; i++) {
+```js
+for(var i = 1; i &lt;= 1000; i++) {
   fs.readFile('./'+i+'.txt', function() {
      // do something with the file
   });
 }
 do_next_part();
-</pre>
+```
 
 This code would start 1000 simultaneous asynchronous file reads, and run the do_next_part() function immediately. This has several problems: first, we’d like to wait until all the file reads are done until going further. Second, launching a thousand file reads simultaneously will quickly exhaust the number of available file handles (a limited resource needed to read files). Third, we do not have a way to accumulate the result for do_next_part().
 
@@ -93,7 +109,7 @@ Control flow functions enable us to do this in Node.js. A control flow function 
 
 There are three basic patterns for this.
 
-### %chapter_number%.2.1 Control flow pattern #1: Series - an asynchronous for loop
+### 7.2.1 Control flow pattern #1: Series - an asynchronous for loop
 
 Sometimes we just want to do one thing at a time. For example, we need to do five database queries, and each of those queries needs data from the previous query, so we have to run one after another.
 
@@ -142,7 +158,7 @@ This results in serial execution of the asynchronous function calls. Control is 
 
 **Tags:** sequential, no-concurrency, no-concurrency-control
 
-### %chapter_number%.2.2 Control flow pattern #2: Full parallel - an asynchronous, parallel for loop
+### 7.2.2 Control flow pattern #2: Full parallel - an asynchronous, parallel for loop
 
 In other cases, we just want to take a small set of operations, launch them all in parallel and then do something when all of them are complete.
 
@@ -186,7 +202,7 @@ Since this means that all the I/O operations are started in parallel immediately
 
 Tags: parallel, full-concurrency, no-concurrency-control
 
-### %chapter_number%.2.3 Control flow pattern #3: Limited parallel - an asynchronous, parallel, concurrency limited for loop
+### 7.2.3 Control flow pattern #3: Limited parallel - an asynchronous, parallel, concurrency limited for loop
 
 In this case, we want to perform some operations in parallel, but keep the number of running I/O operations under a set limit:
 
@@ -231,7 +247,7 @@ Of course, the criteria for whether or not we should launch another task could b
 *   Starts a limited number of operations in parallel (partial concurrency, full concurrency control)
 *   No guarantee of order, only that all the operations have been completed
 
-## %chapter_number%.3 Building a control flow library on top of these patterns
+## 7.3 Building a control flow library on top of these patterns
 
 For the sake of simplicity, I used a fixed array and named functions in the control flow patterns above.
 
@@ -239,7 +255,7 @@ The problem with the examples above is that the control flow is intertwined with
 
 We can write the same control flows as functions that take arguments in the form:
 
-<pre class="prettyprint">
+```js
 series([
   function(next) { async(1, next); },
   function(next) { async(2, next); },
@@ -248,7 +264,7 @@ series([
   function(next) { async(5, next); },
   function(next) { async(6, next); }
 ], final);
-</pre>
+```
 
 E.g. an array of callback functions and a final() function.
 
@@ -394,7 +410,7 @@ To illustrate the problem, I added a longer delay to the return from async() and
 
 The anonymous function: (function(index) { ... } (task)) is needed because if we didn't create a new scope using an anonymous function, we would store the result in the wrong place in the results array (since the value of task might have changed between calling the callback and returning back from the callback). See [the chapter on Javascript gotchas](ch4.html) for more information on scope rules in JS.
 
-## %chapter_number%.4 The fourth control flow pattern
+## 7.4 The fourth control flow pattern
 
 There is a fourth control flow pattern, which I won't discuss here: eventual completion. In this case, we are not interested in strictly controlling the order of operations, only that they occur at some point and are correctly responded to.
 

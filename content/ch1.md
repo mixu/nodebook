@@ -1,3 +1,8 @@
+home: index.html
+prev: index.html
+next: ch2.html
+---
+
 # 1. Introduction
 
 Thanks for visiting my book site!

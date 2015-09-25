@@ -1,10 +1,16 @@
-# %chapter_number%. Simple messaging application
+home: index.html
+prev: ch2.html
+next: ch4.html
+---
+# 3. Simple messaging application
 
-<div class="summary">In this chapter, I:
-
-*   specify a simple messaging application that uses long polling
-*   build a long polling server using Node and
-*   build a simple messaging client using jQuery
+<div class="summary">
+  In this chapter, I:
+  <ul>
+    <li>specify a simple messaging application that uses long polling</li>
+    <li>build a long polling server using Node and</li>
+    <li>build a simple messaging client using jQuery</li>
+  </ul>
 </div>
 
 Let’s jump right in and do something with Node.js. We will be implementing a simple chat-type application using long polling. In our example, we will use simple, manual techniques to get a server up and running quickly. Routing, file serving and error handling are topics which we will expand upon in the later chapters.
@@ -13,7 +19,7 @@ Let’s jump right in and do something with Node.js. We will be implementing a s
 
 <table>
   <tr><td>Request-response</td><td>Long polling</td><td>Sockets</td></tr>
-  <tr><td>![](assets/ch3-req-res.png)</td><td>![](assets/ch3-long-polling.png)</td><td>![](assets/ch3-sockets.png)</td></tr>
+  <tr><td class="huge">![](assets/img/ch3-req-res.png)</td><td class="huge">![](assets/img/ch3-long-polling.png)</td><td class="huge">![](assets/img/ch3-sockets.png)</td></tr>
   <tr><td colspan="3">The difference between request-response (simple polling), long polling and sockets</td></tr>
 </table>
 
@@ -32,31 +38,35 @@ There are three cases we need to handle:
 
 These are illustrated below:
 
-![](assets/ch3-illustration.png)
+![](assets/img/ch3-illustration.png)
 
-## %chapter_number%.1 Building a simple server
+## 3.1 Building a simple server
 
 Let’s start by getting the server to respond to HTTP requests. We will require a number of Node.js libraries:
 
-<pre class="prettyprint">
+```js
 var http = require('http'),
     url = require('url'),
     fs = require('fs');
-</pre>
+```
 
 In addition, we need storage for the messages as well as pending clients:
 
-<pre class="prettyprint">var messages = [&quot;testing&quot;];
-var clients = [];</pre>
+```js
+var messages = [&quot;testing&quot;];
+var clients = [];
+```
 
 We can create a server using http.createServer(). This function takes a callback function as an argument, and calls it on each request with two parameters: the first parameter is the request, while the second parameter is the response. Refer to [nodejs.org](http://nodejs.org/api) for more information on the [http API](http://nodejs.org/api/http.html). We will get into more detail in the later chapters.
 
 Let’s create a simple server which returns “Hello World”:
 
-<pre class="prettyprint">http.createServer(function (req, res) {
+```js
+http.createServer(function (req, res) {
    res.end("Hello world");
 }).listen(8080, 'localhost');
-console.log('Server running.');</pre>
+console.log('Server running.');
+```
 
 If you run the code above using node server.js, and make a request by pointing your browser to http://localhost:8080/, you will get a page containing “Hello World”.
 
@@ -64,38 +74,39 @@ This is not particularly interesting, however, we have now created our first ser
 
 This can be done using the [FS API](http://nodejs.org/api/fs.html):
 
-<pre class="prettyprint">
+```js
 http.createServer(function (req, res) {
   fs.readFile('./index.html', function(err, data) {
     res.end(data);
   });
 }).listen(8080, 'localhost');
-console.log('Server running.');</pre>
+console.log('Server running.');
+```
 
 We will read the file using asynchronous function fs.readFile. When it completes, it runs the inner function, which calls res.end() with the content of the file. This allows us to send back the content of the index.html file in the same directory as server.js.
 
-## %chapter_number%.2 Writing the client
+## 3.2 Writing the client
 
 Now that we have the capability to serve a file, let’s write our client code. The client will simply be an HTML page which includes [jQuery](http://en.wikipedia.org/wiki/JQuery) and uses it to perform the long polling requests. We will have a simple page with a single text area, which will contain the messages we have received from the server:
 
-<pre class="prettyprint">
-&lt;html&gt;
-&lt;head&gt;
-  &lt;script src=&quot;http://code.jquery.com/jquery-1.6.4.min.js&quot;&gt;&lt;/script&gt;
-  &lt;script&gt;
+```html
+<html>
+<head>
+  <script src=&quot;http://code.jquery.com/jquery-1.6.4.min.js&quot;></script>
+  <script>
   // client code here
-  &lt;/script&gt;
-&lt;/head&gt;
-&lt;body&gt;
- &lt;textarea id=&quot;output&quot; style=&quot;width: 100%; height: 100%;&quot;&gt;
- &lt;/textarea&gt;
-&lt;/body&gt;
-&lt;/html&gt;
-</pre>
+  </script>
+</head>
+<body>
+ <textarea id=&quot;output&quot; style=&quot;width: 100%; height: 100%;&quot;>
+ </textarea>
+</body>
+</html>
+```
 
 jQuery provides a number of [AJAX functions](http://api.jquery.com/category/ajax/), which allow us to make HTTP requests from the browser. We will use the getJSON() function, which makes a HTTP GET call and parses the resulting data from the JSON format. The first argument is the URL to get, and the second parameter is the function which handles the returned response.
 
-<pre class="prettyprint">
+```js
 // Client code
 var counter = 0;
 var poll = function() {
@@ -107,17 +118,18 @@ var poll = function() {
   });
 }
 poll();
-</pre>
+```
 
 We maintain a global counter, which starts at zero and is passed to in the URL to the server. The first request will be to /poll/0, with subsequent requests incrementing that counter to keep track of which messages we have already received.
 
 Once the message is received, we update the counter on the client side, append the message text to the textarea with the ID #output, and finally initiate a new long polling request by calling poll() again. To start the polling for the first time, we call poll() at the end of code.
 
-## %chapter_number%.3 Implementing long-polling on the server side
+## 3.3 Implementing long-polling on the server side
 
 Now that we have implemented the client, let’s add the code to implement long polling on the server side. Instead of responding to all requests with the contents of index.html, we need to parse the request URL and determine what we want to do.
 
-<pre class="prettyprint">http.createServer(function (req, res) {
+```js
+http.createServer(function (req, res) {
    // parse URL
    var url_parts = url.parse(req.url);
    console.log(url_parts);
@@ -131,16 +143,16 @@ Now that we have implemented the client, let’s add the code to implement long 
   }
 }).listen(8080, 'localhost');
 console.log('Server running.');
-</pre>
+```
 
 We are using the url API to parse the request URL, then we refer to the one of the parts of the url, the pathname which corresponds to the part that comes after the server IP/domain name. Since the client polls the “/poll” location, we check whether the first five characters of the pathname match that address before executing the poll code.
 
 The long polling code on the server side is simple.
 
-<pre class="prettyprint">
+```js
 var count = url_parts.pathname.replace(/[^0-9]*/, '');
 console.log(count);
-if(messages.length &gt; count) {
+if(messages.length > count) {
   res.end(JSON.stringify( {
     count: messages.length,
     append: messages.slice(count).join(&quot;\n&quot;)+&quot;\n&quot;
@@ -148,7 +160,7 @@ if(messages.length &gt; count) {
 } else {
   clients.push(res);
 }
-</pre>
+```
 
 We take the URL, and remove all non-numeric characters using a regular expression. This gives us the counter value from the client: “/poll/123” becomes simply “123”. Then we check whether the messages array is longer than the counter value, and if it is, we will immediately return by using Response.end().
 
@@ -156,16 +168,16 @@ Because we are sending data as JSON, we create an object with the "count" and "a
 
 If the count is greater than the current number of messages, then we do not do anything. The client request will remain pending, and we will store the Response object into the clients array using push(). Once this is done, our server goes back to waiting for a new message to arrive, while the client request remains open.
 
-## %chapter_number%.4 Implementing message receiving and broadcasting on the server side
+## 3.4 Implementing message receiving and broadcasting on the server side
 
 Finally, let’s implement the message receiving functionality on the server side. Messages are received via the HTTP GET requests to the /msg/ path, for example: /msg/Hello%20World. This allows us to skip writing more client code for making these requests (easy, but unnecessary).
 
-<pre class="prettyprint">
+```js
 } else if(url_parts.pathname.substr(0, 5) == '/msg/') {
   // message receiving
   var msg = unescape(url_parts.pathname.substr(5));
   messages.push(msg);
-  while(clients.length &gt; 0) {
+  while(clients.length > 0) {
     var client = clients.pop();
     client.end(JSON.stringify( {
       count: messages.length,
@@ -174,11 +186,11 @@ Finally, let’s implement the message receiving functionality on the server sid
   }
   res.end();
 }
-</pre>
+```
 
 We decode the url-encoded message using unescape(), then we push the message to the messages array. After this, we will notify all pending clients by continuously pop()ing the clients array until it is empty. Each pending client request receives the current message. Finally, the pending request is terminated.
 
-## %chapter_number%.5 Conclusion and further improvements
+## 3.5 Conclusion and further improvements
 
 Try running the code in Node and sending messages using your browser:
 

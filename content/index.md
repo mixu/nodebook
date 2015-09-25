@@ -1,3 +1,6 @@
+home: index.html
+next: ch1.html
+---
 # Table of Contents
 
 ## Basics

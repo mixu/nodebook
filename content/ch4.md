@@ -1,8 +1,16 @@
-# %chapter_number%. V8 and Javascript gotchas
+home: index.html
+prev: ch3.html
+next: ch5.html
+---
+# 4. V8 and Javascript gotchas
 
-<div class="summary">In this chapter, I:
-
-*   explain why you need a `self` variable sometimes along with the rules surrounding the `this` keyword*   explain why you might get strange results from `for` loops along with the basics of the variable scope in Javascript*   show a couple of other minor gotchas that I found confusing
+<div class="summary">
+  In this chapter, I:
+  <ul>
+    <li>explain why you need a `self` variable sometimes along with the rules surrounding the `this` keyword</li>
+    <li>explain why you might get strange results from `for` loops along with the basics of the variable scope in Javascript</li>
+    <li>show a couple of other minor gotchas that I found confusing</li>
+  </ul>
 </div>
 
 There are basically two things that trip people up in Javascript:
@@ -12,18 +20,18 @@ There are basically two things that trip people up in Javascript:
 
 In this chapter, I'll examine these JS gotchas and a couple of V8-related surprises. If you're feeling pretty confident, then feel free to skim or skip this chapter.
 
-### %chapter_number%.1 Gotcha #1: this keyword
+### 4.1 Gotcha #1: this keyword
 
 In object-oriented programming languages, the `this` keyword is used to refer to the current instance of the object. For example, in Java, the value of `this` always refers to the current instance:
 
-<pre class="prettyprint lang-java">
+```java
 public class Counter {
   private int count = 0;
   public void increment(int value) {
     this.count += value;
   }
 }
-</pre>
+```
 
 In Javascript - which is a prototype-based language - the `this` keyword is not fixed to a particular value. Instead, the value of `this` is determined by _how the function is called_ <span class="ref">[[1](http://javascriptweblog.wordpress.com/2010/08/30/understanding-javascripts-this)]</span>:
 
@@ -214,7 +222,7 @@ obj.process();
 
 Because `self` is an ordinary variable, it will contain the value of `this` when the first function was called - no matter how or when the callback function passed to forEach() gets called. If we had used "`this`" instead of "self" in the callback function, it would have referred to the wrong object and the call to print() would have failed.
 
-### %chapter_number%.2 Gotcha #2: variable scope and variable evaluation strategy
+### 4.2 Gotcha #2: variable scope and variable evaluation strategy
 
 C and C-like languages have rather simple variable scope rules. Whenever you see a new block, like { ... }, you know that all the variables defined within that block are local to that block.
 
@@ -377,7 +385,7 @@ For a much more detailed explanation, please read [Dimitry Soshnikov’s detaile
 
 When you are iterating through the contents of an array, you should use Array.forEach(), as it passes values as function arguments, avoiding this problem. However, in some cases you will still need to use the "create an anonymous function" technique to explicitly establish new scopes.
 
-### %chapter_number%.3 Other minor gotchas
+### 4.3 Other minor gotchas
 
 You should also be aware of the following gotchas:<p>
 

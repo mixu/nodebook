@@ -3,67 +3,55 @@
   <head>
     <title>5. Arrays, Objects, Functions and JSON - Mixu&#x27;s Node book</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<style type="text/css">
-@font-face {
-  font-family: 'Droid Sans';
-  font-style: normal;
-  font-weight: normal;
-  src: local('Droid Sans'), local('DroidSans'), url('DroidSans.woff') format('woff');
-}
-</style>
-<link href='http://fonts.googleapis.com/css?family=Andika|Cantarell:400,700,400italic' rel='stylesheet' type='text/css'>
-<link href='http://fonts.googleapis.com/css?family=Droid+Sans+Mono' rel='stylesheet' type='text/css'>
-<script src="assets/jquery-1.6.1.min.js"></script>
-<link type="text/css" rel="stylesheet" href="assets/style.css"/>
-<style type="text/css">
-#bottom_navi {
-  font-size: larger;
-  margin: 8px;
-}
-</style>
-<link type="text/css" rel="stylesheet" href="assets/assert.css"/>
-<link type="text/css" rel="stylesheet" href="assets/prettify.css"/>
-<script type="text/javascript" src="assets/prettify.js"></script>
-<!-- Script runner -->
-<script type="text/javascript" src="assets/runner.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <script src="assets/jquery-1.6.1.min.js"></script>
+    <link type="text/css" rel="stylesheet" href="assets/style.css"/>
+    <link type="text/css" rel="stylesheet" href="assets/assert.css"/>
+    <link type="text/css" rel="stylesheet" href="assets/pilcrow.css"/>
+    <link type="text/css" rel="stylesheet" href="assets/hljs-github.min.css"/>
+    <link type="text/css" rel="stylesheet" href="assets/prettify.css"/>
+    <script type="text/javascript" src="assets/prettify.js"></script>
+    <!-- Script runner -->
+    <script type="text/javascript" src="assets/runner.js"></script>
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-26716650-3', 'auto');
+      ga('send', 'pageview');
+
+    </script>
   </head>
 <body>
   <div id="wrapper">
     <div id="header">
-      <div id="brand">
-        <h1>Mixu's Node book</h1>
-        <span>A book about using Node.js</span>
-      </div>
-      <div id="navi">
-        <form class="search" action="http://www.google.com/search">
-          <input type="hidden" name="as_sitesearch" value="book.mixu.net">
-          <input type="text" name="as_q" value="" class="search_field">
-          <input type="submit" value="Search" class="search_btn">
-        </form>
-      </div>
+    <h1>Mixu's Node book</h1>
+    <h2>A book about using Node.js</h2>
     </div>
-
     <div class="clear">
       <hr>
     </div>
-     <!-- Main -->
 
     <div id="main">
       <div id="container">
-        <div id="content" class="post">
-<h1 id="-chapter_number-arrays-objects-functions-and-json">5. Arrays, Objects, Functions and JSON</h1>
-<div class="summary">In this chapter, I go through a number of useful ECMA5 functions for situations such as:
-
-<em>   Searching the content of an Array
-</em>   Checking whether the contents of an Array satisfy a criteria
-<em>   Iterating through the properties (keys) of an object
-</em>   Accepting variable number of arguments in functions
+        <div id="content" class="post"><h1 id="5-arrays-objects-functions-and-json"><a class="header-link" href="#5-arrays-objects-functions-and-json"></a>5. Arrays, Objects, Functions and JSON</h1>
+<div class="summary">
+In this chapter, I go through a number of useful ECMA5 functions for situations such as:
+  <ul class="list">
+    <li>Searching the content of an Array</li>
+    <li>Checking whether the contents of an Array satisfy a criteria</li>
+    <li>Iterating through the properties (keys) of an object</li>
+    <li>Accepting variable number of arguments in functions</li>
+  </ul>
 </div>
 
 <p>This chapter focuses on Arrays, Objects and Functions. There are a number of useful ECMAScript 5 features which are supported by V8, such as Array.forEach(), Array.indexOf(), Object.keys() and String.trim().</p>
 <p>If you haven&#39;t heard of those functions, it&#39;s because they are part of ECMAScript 5, which is <a href="http://kangax.github.com/es5-compat-table/">not supported by Internet Explorer versions</a> prior to IE9.</p>
 <p>Typically when writing Javascript for execution on the client side you have to force yourself to the lowest common denominator. The ECMAScript 5 additions make writing server side code nicer. Even IE is finally adding support for ECMA 5 - in IE9.</p>
-<h3 id="arrays-vs-objects">Arrays vs. Objects</h3>
+<h3 id="arrays-vs-objects"><a class="header-link" href="#arrays-vs-objects"></a>Arrays vs. Objects</h3>
 <p>You have the choice between using arrays or objects for storing your data in Javascript. Arrays can also be used as stacks:</p>
 <pre class="run prettyprint">
 var arr = [ 'a', 'b', 'c'];
@@ -91,9 +79,9 @@ console.log(arr); // ['a', 'b', 'c']
  }
  </pre>
 
-<h3 id="working-with-arrays">Working with Arrays</h3>
+<h3 id="working-with-arrays"><a class="header-link" href="#working-with-arrays"></a>Working with Arrays</h3>
 <p>Arrays are very versatile for storing data, and can be searched, tested, and have functions applied to them in V8 using the following ECMAScript 5 functions:</p>
-<h4 id="searching-the-content-of-an-array">Searching the content of an Array</h4>
+<h4 id="searching-the-content-of-an-array"><a class="header-link" href="#searching-the-content-of-an-array"></a>Searching the content of an Array</h4>
 <table>
 <tr><td>Array.isArray(array)</td><td>Returns true if a variable is an array, false if it is not.</td></tr>
 
@@ -136,7 +124,7 @@ console.log(Object.keys(lookup).indexOf(12) > -1); // false
 console.log(Object.keys(lookup).indexOf(''+12) > -1); // true
 </pre>
 
-<h4 id="applying-function-to-every-item-in-an-array">Applying function to every item in an Array</h4>
+<h4 id="applying-function-to-every-item-in-an-array"><a class="header-link" href="#applying-function-to-every-item-in-an-array"></a>Applying function to every item in an Array</h4>
 <table>
 <tr><td>filter(callback[, thisObject])</td><td>Creates a new array with all of the elements of this array for which the provided filtering function returns true. If a thisObject parameter is provided to filter, it will be used as the this for each invocation of the callback. IE9</td></tr>
 <tr><td>forEach(callback[, thisObject])</td><td>Calls a function for each element in the array.</td></tr>
@@ -170,7 +158,7 @@ console.log(items);
 </table>
 
 <p><code>reduce()</code> and <code>reduceRight()</code> apply a function against an accumulator and each value of the array. The callback receives four arguments: the initial value (or value from the previous callback call), the value of the current element, the current index, and the array over which iteration is occurring (e.g. arr.reduce(function(previousValue, currentValue, index, array){ ... }).</p>
-<h4 id="checking-whether-the-contents-of-an-array-satisfy-a-criteria">Checking whether the contents of an Array satisfy a criteria</h4>
+<h4 id="checking-whether-the-contents-of-an-array-satisfy-a-criteria"><a class="header-link" href="#checking-whether-the-contents-of-an-array-satisfy-a-criteria"></a>Checking whether the contents of an Array satisfy a criteria</h4>
 <table>
 <tr><td>every(callback[, thisObject])</td><td>Returns true if every element in this array satisfies the provided testing function.</td></tr>
 <tr><td>some(callback[, thisObject])</td><td>Returns true if at least one element in this array satisfies the provided testing function.</td></tr>
@@ -187,7 +175,7 @@ if (types.some(function(value) {
 }
 </pre>
 
-<h3 id="ecma-3-array-functions">ECMA 3 Array functions</h3>
+<h3 id="ecma-3-array-functions"><a class="header-link" href="#ecma-3-array-functions"></a>ECMA 3 Array functions</h3>
 <p>I&#39;d just like to remind you that these exist:</p>
 <table>
 <tr><td>sort([compareFunction])</td><td>Sorts the elements of an array.</td></tr>
@@ -213,7 +201,7 @@ var d = b.splice(1, 1, 'foo', 'bar');
 console.log( b, d );
 </pre>
 
-<h3 id="working-with-objects">Working with Objects</h3>
+<h3 id="working-with-objects"><a class="header-link" href="#working-with-objects"></a>Working with Objects</h3>
 <p>Objects are useful when you need to have named properties (like a hash), and you don&#39;t care about the order of the properties. The most common basic operations include iterating the properties and values of an Object, and working with arrays of Objects.</p>
 <table>
 <tr>
@@ -236,7 +224,7 @@ var keys = Object.keys({ a: 'foo', b: 'bar'});
 console.log(keys, keys.length);
 </pre>
 
-<h4 id="iterating-through-the-properties-keys-of-an-object">Iterating through the properties (keys) of an object</h4>
+<h4 id="iterating-through-the-properties-keys-of-an-object"><a class="header-link" href="#iterating-through-the-properties-keys-of-an-object"></a>Iterating through the properties (keys) of an object</h4>
 <p>An easy way to iterate through the keys is to use Object.keys() and then apply Array.forEach() on the array:</p>
 <pre class="run prettyprint">
 var group = { 'Alice': { a: 'b', b: 'c' }, 'Bob': { a: 'd' }};
@@ -250,7 +238,7 @@ people.forEach(function(person) {
 });
 </pre>
 
-<h4 id="iterating-objects-in-alphabetical-order">Iterating objects in alphabetical order</h4>
+<h4 id="iterating-objects-in-alphabetical-order"><a class="header-link" href="#iterating-objects-in-alphabetical-order"></a>Iterating objects in alphabetical order</h4>
 <p>Remember that object properties are not necessarily retrieved in order, so if you want the keys to be in alphabetical order, use sort():</p>
 <pre class="run prettyprint">
 var obj = { x: '1', a: '2', b: '3'};
@@ -261,7 +249,7 @@ items.forEach(function(item) {
 });
 </pre>
 
-<h4 id="sorting-arrays-of-objects-by-property">Sorting arrays of objects by property</h4>
+<h4 id="sorting-arrays-of-objects-by-property"><a class="header-link" href="#sorting-arrays-of-objects-by-property"></a>Sorting arrays of objects by property</h4>
 <p>The default sort function compares the items in the array as strings, but you can pass a custom function to sort() if you want to sort an array of objects by a property of the objects:</p>
 <pre class="run prettyprint">
 var arr = [
@@ -276,7 +264,7 @@ console.log( arr );
 </pre>
 
 <p>The code above uses the comparator parameter of sort() to specify a custom sort, and then uses String.localCompare to return the correct sort order information.</p>
-<h4 id="checking-whether-a-property-is-present-even-if-it-is-false">Checking whether a property is present, even if it is false</h4>
+<h4 id="checking-whether-a-property-is-present-even-if-it-is-false"><a class="header-link" href="#checking-whether-a-property-is-present-even-if-it-is-false"></a>Checking whether a property is present, even if it is false</h4>
 <p>There are multiple ways of checking whether a property is defined:</p>
 <pre class="run prettyprint">
 var obj = { a: "value", b: false };
@@ -311,7 +299,7 @@ console.log( obj.hasOwnProperty('toString') );
 </pre>
 
 <p>(Note: All objects have a toString method, derived from Object).</p>
-<h4 id="filtering-an-array-of-objects">Filtering an array of objects</h4>
+<h4 id="filtering-an-array-of-objects"><a class="header-link" href="#filtering-an-array-of-objects"></a>Filtering an array of objects</h4>
 <pre class="run prettyprint">
 function match(item, filter) {
   var keys = Object.keys(filter);
@@ -331,7 +319,7 @@ objects.forEach(function(obj) {
 </pre>
 
 <p>Substituting some() with every() above would change the definition of match() so that all key-value pairs in the filter object must match.</p>
-<h3 id="working-with-functions">Working with Functions</h3>
+<h3 id="working-with-functions"><a class="header-link" href="#working-with-functions"></a>Working with Functions</h3>
 <p>Defining new functions:</p>
 <pre class="run prettyprint">
 function doSomething() { return 'doSomething'; }
@@ -359,7 +347,7 @@ console.log( doSomething() );
 console.log( doSomethingElse() );
 </pre>
 
-<h4 id="call-and-apply">Call and apply</h4>
+<h4 id="call-and-apply"><a class="header-link" href="#call-and-apply"></a>Call and apply</h4>
 <p>The value of the this keyword is determined by how the function was called. For the details, see the section on this scope and call() and apply() in the previous chapter.</p>
 <table>
 <tr><td>Function.call</td><td>Calls a function with a given this value and arguments provided individually.</td></tr>
@@ -379,7 +367,7 @@ f1.apply(obj2, [ 'A', 'B' ]); // The value of this is changed to obj2
 </pre>
 
 <p>The syntax of call() is identical to that of apply(). The difference is that call() uses the actual arguments passed to it (after the first argument), while apply() takes just two arguments: thisArg and an array of arguments.</p>
-<h4 id="variable-number-of-arguments">Variable number of arguments</h4>
+<h4 id="variable-number-of-arguments"><a class="header-link" href="#variable-number-of-arguments"></a>Variable number of arguments</h4>
 <p>Functions have a arguments property:</p>
 <table>
 <tr><td>Property: arguments</td><td>The arguments property contains all the parameters passed to the function</td></tr>
@@ -422,7 +410,7 @@ function test() {
 test(1, 2, 3);
 </pre>
 
-<h3 id="working-with-json-data">Working with JSON data</h3>
+<h3 id="working-with-json-data"><a class="header-link" href="#working-with-json-data"></a>Working with JSON data</h3>
 <p>The JSON functions are particularly useful for working with data structures in Javascript. They can be used to transform objects and arrays to strings.</p>
 <table>
 <tr><td>JSON.parse(text[, reviver]);</td><td>Parse a string as JSON, optionally transform the produced value and its properties, and return the value.</td></tr>
@@ -445,48 +433,20 @@ console.log(JSON.stringify(obj));
 <p>The optional space parameter in JSON.stringify is particularly useful in producing readable output from complex object.</p>
 <p>The reviver and replacer parameters are rarely used. They expect a function which takes the key and value of each value as an argument. That function is applied to the JSON input before returning it.</p>
 
-<div id="bottom_navi">
-  <a href="ch4.html"> &lt; &lt; Previous Chapter</a> | <a href="ch6.html">Next Chapter &gt; &gt;</a>
-</div>
-
-<div id="disqus_thread"></div>
-<script type="text/javascript">
-    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
-    var disqus_shortname = 'mixu'; // required: replace example with your forum shortname
-    /* * * DON'T EDIT BELOW THIS LINE * * */
-    (function() {
-        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
-        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-    })();
-</script>
-<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-<a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
-
-
-
-          </div>
+         <div id="bottom_navi">
+              <a href="ch4.html"> &lt; &lt; Previous Chapter</a> |
+              <a href="ch6.html">Next Chapter &gt; &gt;</a>
+         </div>
         </div>
       </div>
-      <div id="sidebar">
-        <h3><a href="index.html">Home</a></h3>
+    </div>
+    <div id="sidebar">
+      <h3><a href="index.html">Home</a></h3>
+      <h3><a href="single.html">Single page HTML</a></h3>
         <h3><a href="ch4.html">Previous Chapter</a></h3>
         <h3><a href="ch6.html">Next Chapter</a></h3>
-        <br>
-        <p>
-          <a href="http://book.mixu.net/mixu-node-book.mobi" style="color: gray;"> .mobi (Kindle)</a>
-        </p>
-        <p>
-          <a href="http://book.mixu.net/mixu-node-book.epub" style="color: gray;">epub</a>
-        </p>
-        <p>
-          <a href="http://book.mixu.net/single.html" style="color: gray;">Single page HTML</a>
-        </p>
-        <p>
-          <a href="http://www.printfriendly.com/print/v2?url=http://book.mixu.net/single.html" style="color: gray;">PDF</a>
-        </p>
-        <br>
-        <h3>Other books</h3>
+
+      <h3>Other books</h3>
         <ul class="spaced">
           <li>
             <a href="http://book.mixu.net/css/">Learn CSS Layout the pedantic way</a> (2015)
@@ -498,29 +458,31 @@ console.log(JSON.stringify(obj));
             <a href="http://singlepageappbook.com/">Single page apps in depth</a> (2013)
           </li>
         </ul>
-      </div>
+    </div>
     <div class="clear">
     </div>
 
+    <div id="disqus_thread"></div>
+
+    <div class="clear">
+    </div>
     <div id="footer">
-      <p>A book about <a href="http://nodejs.org/">Node</a> by <a href="http://mixu.net/">Mikito Takada</a>.</p>
+      <p>Written by <a href="http://mixu.net/">Mikito Takada</a>.</p>
     </div>
-    </div>
+
+    <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+        var disqus_shortname = 'mixu'; // required: replace example with your forum shortname
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+
   </div>
-
-
-  </div>
-  <script type="text/javascript">
-    var _gaq = _gaq || [];
-    _gaq.push(['_setAccount', 'UA-26716650-1']);
-    _gaq.push(['_trackPageview']);
-
-    (function() {
-      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-    })();
-
-  </script>
 </body>
 </html>

@@ -1,3 +1,7 @@
+home: index.html
+prev: ch13.html
+---
+
 # Thank you for reading my book!
 
 If you've made it this far, thank you.

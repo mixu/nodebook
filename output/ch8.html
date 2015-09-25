@@ -1,60 +1,48 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>8. Node: Modules and npm - Mixu&#x27;s Node book</title>
+    <title>8. An overview of Node: Modules and npm - Mixu&#x27;s Node book</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<style type="text/css">
-@font-face {
-  font-family: 'Droid Sans';
-  font-style: normal;
-  font-weight: normal;
-  src: local('Droid Sans'), local('DroidSans'), url('DroidSans.woff') format('woff');
-}
-</style>
-<link href='http://fonts.googleapis.com/css?family=Andika|Cantarell:400,700,400italic' rel='stylesheet' type='text/css'>
-<link href='http://fonts.googleapis.com/css?family=Droid+Sans+Mono' rel='stylesheet' type='text/css'>
-<script src="assets/jquery-1.6.1.min.js"></script>
-<link type="text/css" rel="stylesheet" href="assets/style.css"/>
-<style type="text/css">
-#bottom_navi {
-  font-size: larger;
-  margin: 8px;
-}
-</style>
-<link type="text/css" rel="stylesheet" href="assets/assert.css"/>
-<link type="text/css" rel="stylesheet" href="assets/prettify.css"/>
-<script type="text/javascript" src="assets/prettify.js"></script>
-<!-- Script runner -->
-<script type="text/javascript" src="assets/runner.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <script src="assets/jquery-1.6.1.min.js"></script>
+    <link type="text/css" rel="stylesheet" href="assets/style.css"/>
+    <link type="text/css" rel="stylesheet" href="assets/assert.css"/>
+    <link type="text/css" rel="stylesheet" href="assets/pilcrow.css"/>
+    <link type="text/css" rel="stylesheet" href="assets/hljs-github.min.css"/>
+    <link type="text/css" rel="stylesheet" href="assets/prettify.css"/>
+    <script type="text/javascript" src="assets/prettify.js"></script>
+    <!-- Script runner -->
+    <script type="text/javascript" src="assets/runner.js"></script>
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-26716650-3', 'auto');
+      ga('send', 'pageview');
+
+    </script>
   </head>
 <body>
   <div id="wrapper">
     <div id="header">
-      <div id="brand">
-        <h1>Mixu's Node book</h1>
-        <span>A book about using Node.js</span>
-      </div>
-      <div id="navi">
-        <form class="search" action="http://www.google.com/search">
-          <input type="hidden" name="as_sitesearch" value="book.mixu.net">
-          <input type="text" name="as_q" value="" class="search_field">
-          <input type="submit" value="Search" class="search_btn">
-        </form>
-      </div>
+    <h1>Mixu's Node book</h1>
+    <h2>A book about using Node.js</h2>
     </div>
-
     <div class="clear">
       <hr>
     </div>
-     <!-- Main -->
 
     <div id="main">
       <div id="container">
-        <div id="content" class="post">
-<h1 id="-chapter_number-an-overview-of-node-modules-and-npm">8. An overview of Node: Modules and npm</h1>
-<div class="summary">In this chapter, I:
-
-*   discuss modules and process-related globals in Node
+        <div id="content" class="post"><h1 id="8-an-overview-of-node-modules-and-npm"><a class="header-link" href="#8-an-overview-of-node-modules-and-npm"></a>8. An overview of Node: Modules and npm</h1>
+<div class="summary">
+In this chapter, I:
+  <ul class="list">
+    <li>discuss modules and process-related globals in Node</li>
+  </ul>
 </div>
 
 <p>Node.js has a good amount of functionality built in. Let&#39;s look at the <a href="http://nodejs.org/api/">Table of Contents for the API documentation</a> and try to group it into manageable chunks (<em>italic</em> = not covered here):</p>
@@ -175,45 +163,26 @@ Coverage TODO.
 
 </table>
 
-<h2 id="-chapter_number-1-node-js-modules">8.1 Node.js modules</h2>
+<h2 id="8-1-node-js-modules"><a class="header-link" href="#8-1-node-js-modules"></a>8.1 Node.js modules</h2>
 <p>Let&#39;s talk about the module system in Node.</p>
 <p>Modules make it possible to include other Javascript files into your applications. In fact, a vast majority of Node’s core functionality is implemented using modules written in Javascript - which means you can read the source code for the core libraries <a href="https://github.com/joyent/node">on Github</a>.</p>
 <p>Modules are crucial to building applications in Node, as they allow you to include external libraries, such as database access libraries - and they help in organizing your code into separate parts with limited responsibilities. You should try to identify reusable parts in your own code and turn them into separate modules to reduce the amount of code per file and to make it easier to read and maintain your code.</p>
 <p>Using modules is simple: you use the <code>require()</code> function, which takes one argument: the name of a core library or a file system path to the module you want to load. You’ve seen this before in the simple messaging application example, where I used <code>require()</code> to use several core modules.</p>
 <p>To make a module yourself, you need to specify what objects you want to export. The exports object is available in the top level scope in Node for this purpose:</p>
-<pre class="prettyprint">
-exports.funcname = function() {
-  return ‘Hello World’;
-};
-</pre>
-
-<p>Any properties assigned to the exports object will be accessible from the return value of the require() function:</p>
-<pre class="prettyprint">
-var hello = require(‘./hello.js’);
-console.log(hello.funcname()); // Print “Hello World”
-</pre>
-
-<p>You can also use module.exports instead of exports:</p>
-<pre class="prettyprint">
-function funcname() { return ‘Hello World’; }
-module.exports = { funcname: funcname };
-</pre>
-
-<p>This alternative syntax makes it possible to assign a single object to exports (such as a class). We’ve previously discussed how you can build classes using prototypal inheritance. By making your classes separate modules, you can easily include them in your application:</p>
-<pre class="prettyprint">// in class.js:
-var Class = function() { … }
-Class.prototype.funcname = function() {...}
-module.exports = Class;
-</pre>
-
-<p>Then you can include your file using require() and make a new instance of your class:</p>
-<pre class="prettyprint">
-// in another file:
-var Class = require(‘./class.js’);
-var object = new Class(); // create new instance
-</pre>
-
-<h3 id="sharing-variables-between-modules">Sharing variables between modules</h3>
+<pre class="hljs"><code>exports.funcname = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{
+  <span class="hljs-keyword">return</span> ‘Hello World’;
+};</code></pre><p>Any properties assigned to the exports object will be accessible from the return value of the require() function:</p>
+<pre class="hljs"><code><span class="hljs-keyword">var</span> hello = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./hello.js'</span>);
+<span class="hljs-built_in">console</span>.log(hello.funcname()); <span class="hljs-comment">// Print “Hello World”</span></code></pre><p>You can also use module.exports instead of exports:</p>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">funcname</span><span class="hljs-params">()</span> </span>{ <span class="hljs-keyword">return</span> <span class="hljs-string">'Hello World'</span>; }
+<span class="hljs-built_in">module</span>.exports = { funcname: funcname };</code></pre><p>This alternative syntax makes it possible to assign a single object to exports (such as a class). We’ve previously discussed how you can build classes using prototypal inheritance. By making your classes separate modules, you can easily include them in your application:</p>
+<pre class="hljs"><code><span class="hljs-comment">// in class.js:</span>
+<span class="hljs-keyword">var</span> Class = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{ … }
+Class.prototype.funcname = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{...}
+<span class="hljs-built_in">module</span>.exports = Class;</code></pre><p>Then you can include your file using require() and make a new instance of your class:</p>
+<pre class="hljs"><code><span class="hljs-comment">// in another file:</span>
+<span class="hljs-keyword">var</span> Class = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./class.js'</span>);
+<span class="hljs-keyword">var</span> object = <span class="hljs-keyword">new</span> Class(); <span class="hljs-comment">// create new instance</span></code></pre><h3 id="sharing-variables-between-modules"><a class="header-link" href="#sharing-variables-between-modules"></a>Sharing variables between modules</h3>
 <p>Note that there is no global context in Node. Each script has it&#39;s own context, so including multiple modules does not pollute the current scope. <code>var foo = &#39;bar&#39;;</code> in the top level scope of another module will not define <code>foo</code> in other modules.</p>
 <p>What this means is that the only way to share variables and values between node modules is to include the same module in multiple files. Since modules are cached, you can use a shared module to store common data, such as configuration options:</p>
 <pre class="prettyprint">
@@ -264,7 +233,7 @@ if (module === require.main) {
 </pre>
 
 <p>process.stdin, process.stdout and process.stderr are briefly discussed in the next chapter, where we discuss readable and writable streams.</p>
-<h3 id="organizing-modules">Organizing modules</h3>
+<h3 id="organizing-modules"><a class="header-link" href="#organizing-modules"></a>Organizing modules</h3>
 <p>There are <a href="http://nodejs.org/api/modules.html#loading_from_node_modules_Folders">three ways</a> in which you can require() files:</p>
 <ul class="list">
 <li>using a relative path: foo = require(&#39;./lib/bar.js&#39;);</li>
@@ -279,7 +248,7 @@ if (module === require.main) {
 <li>/node_modules/bar.js</li>
 </ul>
 <p>Loading modules in this way is easier than specifying a relative path, since you can move the files without worrying about the paths changing.</p>
-<h3 id="directories-as-modules">Directories as modules</h3>
+<h3 id="directories-as-modules"><a class="header-link" href="#directories-as-modules"></a>Directories as modules</h3>
 <p>You can organize your modules into directories, as long as you provide a point of entry for Node.</p>
 <p>The easiest way to do this is to create the directory ./node_modules/mymodulename/, and put an index.js file in that directory. The index.js file will be loaded by default.</p>
 <p>Alternatively, you can put a package.json file in the mymodulename folder, specifying the name and main file of the module:</p>
@@ -292,10 +261,10 @@ if (module === require.main) {
 
 <p>This would cause the file ./node_modules/mymodulename/lib/foo.js to be returned from <code>require(&#39;mymodulename&#39;)</code>.</p>
 <p>Generally, you want to keep a single ./node_modules folder in the base directory of your app. You can install new modules by adding files or directories to ./node_modules. The best way to manage these modules is to use npm, which is covered briefly in the next section.</p>
-<h2 id="-chapter_number-2-npm">8.2 npm</h2>
+<h2 id="8-2-npm"><a class="header-link" href="#8-2-npm"></a>8.2 npm</h2>
 <p><a href="http://npmjs.org/">npm</a> is the package manager used to distribute Node modules. I won&#39;t cover it in detail here, because <a href="http://npmjs.org/doc/">the Internet does that already</a>.</p>
 <p>npm is awesome, and you should use it. Below are a couple of use cases.</p>
-<h3 id="-chapter_number-2-1-installing-packages">8.2.1 Installing packages</h3>
+<h3 id="8-2-1-installing-packages"><a class="header-link" href="#8-2-1-installing-packages"></a>8.2.1 Installing packages</h3>
 <p>The most common use case for npm is to use it for installing modules from other people:</p>
 <pre>
 npm search packagename
@@ -318,7 +287,7 @@ npm update packagename
 </pre>
 
 <p>Packages are installed under ./node_modules/ in the current directory.</p>
-<h3 id="-chapter_number-2-2-specifying-and-installing-dependencies-for-your-own-app">8.2.2 Specifying and installing dependencies for your own app</h3>
+<h3 id="8-2-2-specifying-and-installing-dependencies-for-your-own-app"><a class="header-link" href="#8-2-2-specifying-and-installing-dependencies-for-your-own-app"></a>8.2.2 Specifying and installing dependencies for your own app</h3>
 <p>npm makes installing your application on a new machine easy, because you can specify what modules you want to have in your application by adding a package.json file in the root of your application.</p>
 <p>Here is a minimal package.json:</p>
 <pre class="prettyprint">
@@ -342,14 +311,14 @@ npm update packagename
 npm install
 </pre>
 
-<h3 id="-chapter_number-2-3-loading-dependencies-from-a-remote-git-repository">8.2.3 Loading dependencies from a remote git repository</h3>
+<h3 id="8-2-3-loading-dependencies-from-a-remote-git-repository"><a class="header-link" href="#8-2-3-loading-dependencies-from-a-remote-git-repository"></a>8.2.3 Loading dependencies from a remote git repository</h3>
 <p>One of my favorite features is the ability to use git+ssh URLs to fetch remote git repositories. By specifying a URL like git+ssh://github.com:mixu/nwm.git#master, you can install a dependency directly from a remote git repository. The part after the hash refers to a tag or branch on the repository.</p>
 <p>To list the installed dependencies, use:</p>
 <pre>
 npm ls
 </pre>
 
-<h3 id="-chapter_number-2-4-specifying-custom-start-stop-and-test-scripts">8.2.4 Specifying custom start, stop and test scripts</h3>
+<h3 id="8-2-4-specifying-custom-start-stop-and-test-scripts"><a class="header-link" href="#8-2-4-specifying-custom-start-stop-and-test-scripts"></a>8.2.4 Specifying custom start, stop and test scripts</h3>
 <p>You can also use the &quot;scripts&quot; member of package.json to specify actions to be taken during various stages:</p>
 <pre class="prettyprint">
 { "scripts" :
@@ -364,48 +333,20 @@ npm ls
 
 <p>In the example above, we specify what should happen before install and during install. We also define what happens when npm test, npm start and npm stop are called.</p>
 
-<div id="bottom_navi">
-  <a href="ch7.html"> &lt; &lt; Previous Chapter</a> | <a href="ch9.html">Next Chapter &gt; &gt;</a>
-</div>
-
-<div id="disqus_thread"></div>
-<script type="text/javascript">
-    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
-    var disqus_shortname = 'mixu'; // required: replace example with your forum shortname
-    /* * * DON'T EDIT BELOW THIS LINE * * */
-    (function() {
-        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
-        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-    })();
-</script>
-<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-<a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
-
-
-
-          </div>
+         <div id="bottom_navi">
+              <a href="ch7.html"> &lt; &lt; Previous Chapter</a> |
+              <a href="ch9.html">Next Chapter &gt; &gt;</a>
+         </div>
         </div>
       </div>
-      <div id="sidebar">
-        <h3><a href="index.html">Home</a></h3>
+    </div>
+    <div id="sidebar">
+      <h3><a href="index.html">Home</a></h3>
+      <h3><a href="single.html">Single page HTML</a></h3>
         <h3><a href="ch7.html">Previous Chapter</a></h3>
         <h3><a href="ch9.html">Next Chapter</a></h3>
-        <br>
-        <p>
-          <a href="http://book.mixu.net/mixu-node-book.mobi" style="color: gray;"> .mobi (Kindle)</a>
-        </p>
-        <p>
-          <a href="http://book.mixu.net/mixu-node-book.epub" style="color: gray;">epub</a>
-        </p>
-        <p>
-          <a href="http://book.mixu.net/single.html" style="color: gray;">Single page HTML</a>
-        </p>
-        <p>
-          <a href="http://www.printfriendly.com/print/v2?url=http://book.mixu.net/single.html" style="color: gray;">PDF</a>
-        </p>
-        <br>
-        <h3>Other books</h3>
+
+      <h3>Other books</h3>
         <ul class="spaced">
           <li>
             <a href="http://book.mixu.net/css/">Learn CSS Layout the pedantic way</a> (2015)
@@ -417,29 +358,31 @@ npm ls
             <a href="http://singlepageappbook.com/">Single page apps in depth</a> (2013)
           </li>
         </ul>
-      </div>
+    </div>
     <div class="clear">
     </div>
 
+    <div id="disqus_thread"></div>
+
+    <div class="clear">
+    </div>
     <div id="footer">
-      <p>A book about <a href="http://nodejs.org/">Node</a> by <a href="http://mixu.net/">Mikito Takada</a>.</p>
+      <p>Written by <a href="http://mixu.net/">Mikito Takada</a>.</p>
     </div>
-    </div>
+
+    <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+        var disqus_shortname = 'mixu'; // required: replace example with your forum shortname
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+
   </div>
-
-
-  </div>
-  <script type="text/javascript">
-    var _gaq = _gaq || [];
-    _gaq.push(['_setAccount', 'UA-26716650-1']);
-    _gaq.push(['_trackPageview']);
-
-    (function() {
-      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-    })();
-
-  </script>
 </body>
 </html>

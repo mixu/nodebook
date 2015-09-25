@@ -1,4 +1,34 @@
-build: generate ebook
+book: concat
+	generate-md \
+	--layout ./layout \
+	--input ./content \
+	--output ./output
+
+.PHONY: book
+
+concat:
+	rm -rf ./tmp || true
+	mkdir ./tmp
+	cat content/index.md > ./tmp/single.md
+	cat content/ch1.md | bin/remove-meta.js >> ./tmp/single.md
+	cat content/ch2.md | bin/remove-meta.js>> ./tmp/single.md
+	cat content/ch3.md | bin/remove-meta.js >> ./tmp/single.md
+	cat content/ch4.md | bin/remove-meta.js >> ./tmp/single.md
+	cat content/ch5.md | bin/remove-meta.js >> ./tmp/single.md
+	cat content/ch6.md | bin/remove-meta.js >> ./tmp/single.md
+	cat content/ch7.md | bin/remove-meta.js >> ./tmp/single.md
+	cat content/ch8.md | bin/remove-meta.js >> ./tmp/single.md
+	cat content/ch9.md | bin/remove-meta.js >> ./tmp/single.md
+	cat content/ch10.md | bin/remove-meta.js >> ./tmp/single.md
+	cat content/ch11.md | bin/remove-meta.js >> ./tmp/single.md
+	cat content/ch13.md | bin/remove-meta.js >> ./tmp/single.md
+	generate-md \
+	--input ./tmp/single.md \
+	--layout ./layout \
+	--output ./output
+	cp ./output/single.html ./output/single-page.html
+
+.PHONY: concat
 
 generate:
 	node generate.js
