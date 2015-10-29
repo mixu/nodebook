@@ -26,7 +26,7 @@ The update includes:
 
 I've started working on a follow up book, which will cover more advanced topics - such as testing, ES6 and some topics related to single page applications.
 
-To make time for writing that book, I'm dropping the planned chapters on MVC. This topic has gotten some pretty good coverage elsewhere online; and I'd prefer to working on more advanced topics next.
+To make time for writing that book, I'm dropping the planned chapters on MVC. This topic has gotten some pretty good coverage elsewhere online; and I'd prefer to be working on more advanced topics next.
 
 ## About me
 
